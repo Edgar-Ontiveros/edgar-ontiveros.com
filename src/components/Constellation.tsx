@@ -26,6 +26,28 @@ const DRIFT_SPEED = 10
 const MAX_SPEED = 26
 const EXCLUSION_PUSH = 30
 
+// ── Malla de fondo (capa decorativa, sin interacción) ──
+const MESH_COUNT_DESKTOP = 26
+const MESH_COUNT_MOBILE = 12
+const MESH_MARGIN = 12
+const MESH_LINK_DISTANCE = 110
+const MESH_MIN_SPEED = 1.5
+const MESH_DRIFT_SPEED = 2.5
+const MESH_DOT_RADIUS = 1.3
+const MESH_DOT_ALPHA = 0.2
+const MESH_LINK_ALPHA = 0.12
+
+// ── Resaltado táctil de la capa de nodos ──
+const TOUCH_HIT_RADIUS = 36
+const TOUCH_HIGHLIGHT_MS = 2000
+
+interface MeshPoint {
+  x: number
+  y: number
+  vx: number
+  vy: number
+}
+
 interface ConstellationNode {
   label: string
   x: number
@@ -103,7 +125,10 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     let linkDistance = 160
     let zone: ExclusionZone | null = null
     let nodes: ConstellationNode[] = []
+    let meshPoints: MeshPoint[] = []
     let hoveredIndex = -1
+    let touchIndex = -1
+    let touchUntil = 0
     const pointer = { clientX: 0, clientY: 0, active: false }
     let running = false
     let inViewport = true
@@ -162,6 +187,10 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     }
 
     const seedNodes = (labels: readonly string[]) => {
+      // Un re-seed invalida cualquier resaltado táctil pendiente: el índice
+      // guardado apuntaría a un nodo recién sembrado que nunca fue tocado.
+      touchIndex = -1
+      touchUntil = 0
       nodes = labels.map((label) => {
         const { x, y } = randomPoint()
         const angle = Math.random() * Math.PI * 2
@@ -178,12 +207,51 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       })
     }
 
+    const seedMesh = (count: number) => {
+      meshPoints = Array.from({ length: count }, () => {
+        const angle = Math.random() * Math.PI * 2
+        const speed = MESH_MIN_SPEED + Math.random() * MESH_DRIFT_SPEED
+        return {
+          x: MESH_MARGIN + Math.random() * Math.max(1, width - MESH_MARGIN * 2),
+          y: MESH_MARGIN + Math.random() * Math.max(1, height - MESH_MARGIN * 2),
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+        }
+      })
+    }
+
     const draw = () => {
       ctx.clearRect(0, 0, width, height)
       const { accent, muted, fontMono, dim } = theme
       const hovered = hoveredIndex
 
-      // Enlaces por proximidad, opacidad proporcional a la cercanía.
+      // Capa de fondo: malla decorativa, mucho más tenue que los nodos.
+      ctx.lineWidth = 1
+      ctx.strokeStyle = muted
+      for (let i = 0; i < meshPoints.length; i += 1) {
+        for (let j = i + 1; j < meshPoints.length; j += 1) {
+          const a = meshPoints[i]
+          const b = meshPoints[j]
+          const distance = Math.hypot(b.x - a.x, b.y - a.y)
+          if (distance >= MESH_LINK_DISTANCE) {
+            continue
+          }
+          ctx.globalAlpha = dim * MESH_LINK_ALPHA * (1 - distance / MESH_LINK_DISTANCE)
+          ctx.beginPath()
+          ctx.moveTo(a.x, a.y)
+          ctx.lineTo(b.x, b.y)
+          ctx.stroke()
+        }
+      }
+      ctx.fillStyle = muted
+      ctx.globalAlpha = dim * MESH_DOT_ALPHA
+      for (const point of meshPoints) {
+        ctx.beginPath()
+        ctx.arc(point.x, point.y, MESH_DOT_RADIUS, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      // Capa frontal: enlaces por proximidad, opacidad proporcional a la cercanía.
       ctx.lineWidth = 1
       for (let i = 0; i < nodes.length; i += 1) {
         for (let j = i + 1; j < nodes.length; j += 1) {
@@ -253,6 +321,26 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
         px = pointer.clientX - rect.left
         py = pointer.clientY - rect.top
         pointerInCanvas = px >= 0 && px <= width && py >= 0 && py <= height
+      }
+
+      // La malla de fondo solo deriva y rebota; sin interacción ni zona.
+      for (const point of meshPoints) {
+        point.x += point.vx * dt
+        point.y += point.vy * dt
+        if (point.x < MESH_MARGIN) {
+          point.x = MESH_MARGIN
+          point.vx = Math.abs(point.vx)
+        } else if (point.x > width - MESH_MARGIN) {
+          point.x = width - MESH_MARGIN
+          point.vx = -Math.abs(point.vx)
+        }
+        if (point.y < MESH_MARGIN) {
+          point.y = MESH_MARGIN
+          point.vy = Math.abs(point.vy)
+        } else if (point.y > height - MESH_MARGIN) {
+          point.y = height - MESH_MARGIN
+          point.vy = -Math.abs(point.vy)
+        }
       }
 
       for (const node of nodes) {
@@ -328,6 +416,16 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           }
         }
       }
+      // Resaltado táctil temporal cuando no hay hover de ratón.
+      if (touchIndex !== -1) {
+        if (performance.now() < touchUntil && touchIndex < nodes.length) {
+          if (hoveredIndex === -1) {
+            hoveredIndex = touchIndex
+          }
+        } else {
+          touchIndex = -1
+        }
+      }
     }
 
     const frame = (time: number) => {
@@ -390,6 +488,22 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           )
         }
       }
+
+      const meshCount = desktop ? MESH_COUNT_DESKTOP : MESH_COUNT_MOBILE
+      if (meshPoints.length !== meshCount) {
+        seedMesh(meshCount)
+      } else if (prevWidth > 0 && prevHeight > 0) {
+        for (const point of meshPoints) {
+          point.x = Math.min(
+            width - MESH_MARGIN,
+            Math.max(MESH_MARGIN, (point.x * width) / prevWidth),
+          )
+          point.y = Math.min(
+            height - MESH_MARGIN,
+            Math.max(MESH_MARGIN, (point.y * height) / prevHeight),
+          )
+        }
+      }
       if (!running) {
         draw()
       }
@@ -443,11 +557,33 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     const onPointerLeave = () => {
       pointer.active = false
     }
+    // Touch: un tap cerca de un nodo lo resalta temporalmente (el drift sigue).
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === 'mouse') {
+        return
+      }
+      const rect = canvas.getBoundingClientRect()
+      const tapX = event.clientX - rect.left
+      const tapY = event.clientY - rect.top
+      let best = TOUCH_HIT_RADIUS
+      let found = -1
+      for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i]
+        const distance = Math.hypot(tapX - (node.x + node.ox), tapY - (node.y + node.oy))
+        if (distance < best) {
+          best = distance
+          found = i
+        }
+      }
+      touchIndex = found
+      touchUntil = found === -1 ? 0 : performance.now() + TOUCH_HIGHLIGHT_MS
+    }
     const onVisibilityChange = () => updateRunning()
     let intersectionObserver: IntersectionObserver | null = null
     if (!reducedMotion) {
       host.addEventListener('pointermove', onPointerMove)
       host.addEventListener('pointerleave', onPointerLeave)
+      host.addEventListener('pointerdown', onPointerDown)
       document.addEventListener('visibilitychange', onVisibilityChange)
       intersectionObserver = new IntersectionObserver((entries) => {
         inViewport = entries[0]?.isIntersecting ?? true
@@ -467,6 +603,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       document.removeEventListener('visibilitychange', onVisibilityChange)
       host.removeEventListener('pointermove', onPointerMove)
       host.removeEventListener('pointerleave', onPointerLeave)
+      host.removeEventListener('pointerdown', onPointerDown)
     }
   }, [hostRef, textRef, reducedMotion])
 

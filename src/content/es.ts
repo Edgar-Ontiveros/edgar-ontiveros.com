@@ -19,6 +19,7 @@ export const es: SiteContent = {
     tagline: 'Ingeniero de Machine Learning / Developer',
     valueProp:
       'Llevo sistemas de la idea a producción — el API, el modelo de datos, la interfaz y el deploy.',
+    stackLabel: 'Stack tecnológico',
     ctaContact: 'Contáctame',
     ctaDownloadCv: 'Descargar CV',
     githubLabel: 'Edgar Ontiveros en GitHub',

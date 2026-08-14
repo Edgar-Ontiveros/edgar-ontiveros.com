@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { Constellation } from '../components/Constellation'
 import { ChevronDownIcon, GitHubIcon, LinkedInIcon } from '../components/icons'
+import { CONSTELLATION_NODES } from '../content/constellation'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
 import { useTypewriter } from '../hooks/useTypewriter'
@@ -99,6 +100,16 @@ export function Hero({ content }: HeroProps) {
           </div>
         </div>
       </div>
+
+      {/* Las tecnologías de la constelación como texto accesible (tras el
+          contenido principal): el canvas es decorativo (aria-hidden) y no puede
+          ser la única fuente de esa información. role="list" explícito porque
+          el preflight pone list-style:none y Safari/VoiceOver quitaría el rol. */}
+      <ul role="list" aria-label={hero.stackLabel} className="sr-only">
+        {CONSTELLATION_NODES.map((tech) => (
+          <li key={tech}>{tech}</li>
+        ))}
+      </ul>
 
       <div
         aria-hidden="true"

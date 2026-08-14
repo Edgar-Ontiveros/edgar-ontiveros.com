@@ -31,6 +31,8 @@ export interface SiteContent {
     /** Texto de la línea typewriter. */
     tagline: string
     valueProp: string
+    /** Nombre accesible de la lista de tecnologías de la constelación. */
+    stackLabel: string
     ctaContact: string
     ctaDownloadCv: string
     githubLabel: string

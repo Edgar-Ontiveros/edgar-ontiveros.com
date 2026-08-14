@@ -19,6 +19,7 @@ export const en: SiteContent = {
     tagline: 'Machine Learning Engineer / Developer',
     valueProp:
       'I take systems from idea to production — the API, the data model, the interface, and the deploy.',
+    stackLabel: 'Tech stack',
     ctaContact: 'Get in touch',
     ctaDownloadCv: 'Download CV',
     githubLabel: 'Edgar Ontiveros on GitHub',
