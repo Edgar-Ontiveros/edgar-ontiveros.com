@@ -1,14 +1,40 @@
 /** Idiomas soportados por el sitio. */
 export type Language = 'en' | 'es'
 
+/** Ids de las secciones del one-page, en orden; también son las anclas de la nav. */
+export const SECTION_IDS = [
+  'about',
+  'stack',
+  'experience',
+  'projects',
+  'education',
+  'research',
+  'contact',
+] as const
+
+export type SectionId = (typeof SECTION_IDS)[number]
+
 /**
  * Contrato de todo el texto visible del sitio. `en.ts` y `es.ts` lo
  * implementan; TypeScript obliga a mantener ambos idiomas completos.
  */
 export interface SiteContent {
+  nav: {
+    /** Nombre accesible del <nav>. */
+    ariaLabel: string
+    /** Labels de las anclas, en el orden de SECTION_IDS. */
+    labels: Record<SectionId, string>
+  }
   hero: {
+    eyebrow: string
     name: string
+    /** Texto de la línea typewriter. */
     tagline: string
+    valueProp: string
+    ctaContact: string
+    ctaDownloadCv: string
+    githubLabel: string
+    linkedinLabel: string
   }
   ui: {
     themeToggle: {
@@ -21,5 +47,10 @@ export interface SiteContent {
       /** Código visible del idioma destino (p. ej. "ES"). */
       code: string
     }
+    menu: {
+      open: string
+      close: string
+    }
+    skipToContent: string
   }
 }

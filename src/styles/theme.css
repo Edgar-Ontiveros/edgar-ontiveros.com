@@ -52,6 +52,15 @@
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono:
     'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Cursor del typewriter */
+  --animate-blink: blink 1.1s step-end infinite;
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
 }
 
 /* Mapeo de tokens a utilidades Tailwind: bg-background, bg-surface,
