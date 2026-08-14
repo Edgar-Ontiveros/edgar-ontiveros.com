@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+import { Constellation } from '../components/Constellation'
 import { ChevronDownIcon, GitHubIcon, LinkedInIcon } from '../components/icons'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
@@ -9,40 +11,56 @@ interface HeroProps {
 
 const socialClasses = 'rounded-md p-2 text-muted transition-colors hover:text-accent'
 
-export function Hero({ content }: HeroProps) {
-  const { hero } = content
-  const { display } = useTypewriter(hero.tagline)
+/* La capa invisible reserva la altura final del texto completo (incluido el
+   ancho del cursor) para que el tipeo no cause layout shift; la animación
+   queda oculta a lectores de pantalla, que reciben el texto completo. */
+function TypewriterLine({ text }: { text: string }) {
+  const { display } = useTypewriter(text)
 
   return (
-    <section className="relative flex min-h-svh flex-col justify-center">
-      {/* Aquí se monta el canvas del grafo-constelación (tarea posterior); el fondo queda en --bg. */}
-      <div id="constellation-container" aria-hidden="true" className="absolute inset-0 -z-10" />
+    <p className="font-mono text-lg text-accent sm:text-xl">
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true" className="relative block">
+        <span className="invisible">
+          {text}
+          <span className="ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em]" />
+        </span>
+        <span className="absolute inset-0">
+          {display}
+          <span className="animate-blink ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em] bg-accent-2 motion-reduce:animate-none" />
+        </span>
+      </span>
+    </p>
+  )
+}
+
+export function Hero({ content }: HeroProps) {
+  const { hero } = content
+  const sectionRef = useRef<HTMLElement>(null)
+  const textBlockRef = useRef<HTMLDivElement>(null)
+
+  return (
+    <section ref={sectionRef} className="relative flex min-h-svh flex-col justify-center">
+      <div
+        id="constellation-container"
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+      >
+        <Constellation hostRef={sectionRef} textRef={textBlockRef} />
+      </div>
 
       <div className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6">
-        <div className="flex flex-col items-center gap-5 text-center md:items-start md:text-left">
+        <div
+          ref={textBlockRef}
+          className="flex flex-col items-center gap-5 text-center md:items-start md:text-left"
+        >
           <p className="font-mono text-xs tracking-[0.2em] text-muted sm:text-sm">{hero.eyebrow}</p>
           <h1 className="font-display text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
             {hero.name}
           </h1>
 
-          {/* La capa invisible reserva la altura final del texto completo para
-              que el tipeo no cause layout shift; la animación queda oculta a
-              lectores de pantalla, que reciben el texto completo. */}
-          <p className="w-full font-mono text-lg text-accent sm:text-xl">
-            <span className="sr-only">{hero.tagline}</span>
-            <span aria-hidden="true" className="relative block">
-              {/* La capa de medida incluye un espaciador del tamaño del cursor
-                  para que la reserva y el contenido final midan lo mismo. */}
-              <span className="invisible">
-                {hero.tagline}
-                <span className="ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em]" />
-              </span>
-              <span className="absolute inset-0">
-                {display}
-                <span className="animate-blink ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em] bg-accent-2 motion-reduce:animate-none" />
-              </span>
-            </span>
-          </p>
+          {/* key: reinicia el tipeo cuando cambia el texto (p. ej. al cambiar de idioma). */}
+          <TypewriterLine key={hero.tagline} text={hero.tagline} />
 
           <p className="max-w-xl text-base text-muted sm:text-lg">{hero.valueProp}</p>
 

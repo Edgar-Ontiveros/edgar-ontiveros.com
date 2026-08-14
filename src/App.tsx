@@ -5,7 +5,7 @@ import { useTheme } from './hooks/useTheme'
 import { Hero } from './sections/Hero'
 
 function App() {
-  const { language, content, toggleLanguage } = useLanguage()
+  const { content, toggleLanguage } = useLanguage()
   const { theme, toggleTheme } = useTheme()
 
   return (
@@ -17,8 +17,7 @@ function App() {
         onToggleLanguage={toggleLanguage}
       />
       <main id="content" tabIndex={-1} className="outline-none">
-        {/* key: remonta el hero al cambiar de idioma para que el typewriter reinicie. */}
-        <Hero key={language} content={content} />
+        <Hero content={content} />
         {/* Secciones aún vacías: existen para que las anclas de la nav no queden rotas.
             tabIndex -1: al navegar a un ancla el foco aterriza en la sección. */}
         {SECTION_IDS.map((id) => (
