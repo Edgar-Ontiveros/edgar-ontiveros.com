@@ -1,0 +1,67 @@
+/*
+ * Design tokens del tema "Constelación" — única fuente de verdad de color y
+ * tipografía. Los componentes consumen estos tokens vía las utilidades Tailwind
+ * mapeadas abajo; nunca valores hex sueltos.
+ *
+ * Temas: oscuro por defecto. `data-theme` en <html> fija la elección manual del
+ * usuario; sin atributo, decide `prefers-color-scheme`. Los dos bloques claros
+ * (manual y sistema) deben mantenerse idénticos.
+ */
+
+:root {
+  color-scheme: dark;
+  --bg: #0a0e1a;
+  --surface: #131a2a;
+  --text: #e8eaf0;
+  --text-muted: #94a3b8; /* 7.5:1 sobre --bg, 6.8:1 sobre --surface (AA) */
+  --accent: #22d3ee; /* 10.7:1 sobre --bg (AA) */
+  --accent-2: #f59e0b; /* 9.0:1 sobre --bg (AA) */
+  --border: #263349;
+}
+
+/* Tema claro — elección manual */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --text-muted: #475569; /* 7.2:1 sobre --bg, 7.6:1 sobre --surface (AA) */
+  --accent: #0e7490; /* #22d3ee da 1.7:1 sobre --bg; oscurecido a 5.1:1 (AA) */
+  --accent-2: #b45309; /* #f59e0b da 2.1:1 sobre --bg; oscurecido a 4.8:1 (AA) */
+  --border: #e2e8f0;
+}
+
+/* Tema claro — preferencia del sistema sin elección manual (espejo del bloque anterior) */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --accent: #0e7490;
+    --accent-2: #b45309;
+    --border: #e2e8f0;
+  }
+}
+
+/* Fuentes self-hosted (@fontsource-variable, font-display: swap).
+   --font-sans es la fuente por defecto del documento (preflight de Tailwind). */
+@theme {
+  --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+/* Mapeo de tokens a utilidades Tailwind: bg-background, bg-surface,
+   text-foreground, text-muted, text-accent, text-accent-2, border-border, … */
+@theme inline {
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-foreground: var(--text);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-border: var(--border);
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Fija tema e idioma antes del primer paint para evitar un flash del tema
+      // incorrecto. Debe mantenerse en sincronía con useTheme y useLanguage.
+      ;(function () {
+        var theme = null
+        var lang = null
+        try {
+          theme = localStorage.getItem('theme')
+          lang = localStorage.getItem('lang')
+        } catch (e) {
+          /* localStorage no disponible: solo auto-detección */
+        }
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme
+        }
+        if (lang !== 'en' && lang !== 'es') {
+          lang = /^es(-|$)/i.test(navigator.language) ? 'es' : 'en'
+        }
+        document.documentElement.lang = lang
+      })()
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edgar Ontiveros — Machine Learning Engineer / Developer</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
