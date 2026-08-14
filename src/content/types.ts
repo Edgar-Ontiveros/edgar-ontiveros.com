@@ -38,6 +38,12 @@ export interface SiteContent {
     githubLabel: string
     linkedinLabel: string
   }
+  contact: {
+    blurb: string
+    /** Labels visibles de los botones (nombres de marca, no se traducen). */
+    github: string
+    linkedin: string
+  }
   ui: {
     themeToggle: {
       toLight: string

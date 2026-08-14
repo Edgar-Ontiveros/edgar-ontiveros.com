@@ -1,6 +1,7 @@
 /** Datos del sitio independientes del idioma (marca, enlaces, assets). */
 export const site = {
   monogram: 'EO·',
+  email: 'edgarontiverosfm@gmail.com',
   github: 'https://github.com/Edgar-Ontiveros',
   linkedin: 'https://www.linkedin.com/in/edgaronti',
   cvPdf: '/cv/edgar-ontiveros-cv.pdf',

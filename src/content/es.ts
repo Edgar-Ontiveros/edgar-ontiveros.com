@@ -25,6 +25,12 @@ export const es: SiteContent = {
     githubLabel: 'Edgar Ontiveros en GitHub',
     linkedinLabel: 'Edgar Ontiveros en LinkedIn',
   },
+  contact: {
+    blurb:
+      'Abierto a oportunidades — si estás construyendo algo donde el machine learning se encuentra con producción, hablemos.',
+    github: 'GitHub',
+    linkedin: 'LinkedIn',
+  },
   ui: {
     themeToggle: {
       toLight: 'Cambiar a tema claro',

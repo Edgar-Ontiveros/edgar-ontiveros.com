@@ -2,6 +2,12 @@
 @import './styles/theme.css';
 
 @layer base {
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   body {
     background-color: var(--bg);
     color: var(--text);

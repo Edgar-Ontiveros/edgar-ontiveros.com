@@ -2,6 +2,7 @@ import { Header } from './components/Header'
 import { SECTION_IDS } from './content/types'
 import { useLanguage } from './hooks/useLanguage'
 import { useTheme } from './hooks/useTheme'
+import { Contact } from './sections/Contact'
 import { Hero } from './sections/Hero'
 
 function App() {
@@ -20,9 +21,10 @@ function App() {
         <Hero content={content} />
         {/* Secciones aún vacías: existen para que las anclas de la nav no queden rotas.
             tabIndex -1: al navegar a un ancla el foco aterriza en la sección. */}
-        {SECTION_IDS.map((id) => (
+        {SECTION_IDS.filter((id) => id !== 'contact').map((id) => (
           <section key={id} id={id} tabIndex={-1} className="scroll-mt-16 outline-none" />
         ))}
+        <Contact content={content} />
       </main>
     </>
   )
