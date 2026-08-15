@@ -37,12 +37,15 @@ export interface SiteContent {
     ctaDownloadCv: string
     githubLabel: string
     linkedinLabel: string
+    whatsappLabel: string
+    emailLabel: string
   }
   contact: {
     blurb: string
     /** Labels visibles de los botones (nombres de marca, no se traducen). */
     github: string
     linkedin: string
+    whatsapp: string
   }
   ui: {
     themeToggle: {

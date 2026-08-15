@@ -24,12 +24,15 @@ export const en: SiteContent = {
     ctaDownloadCv: 'Download CV',
     githubLabel: 'Edgar Ontiveros on GitHub',
     linkedinLabel: 'Edgar Ontiveros on LinkedIn',
+    whatsappLabel: 'Edgar Ontiveros on WhatsApp',
+    emailLabel: 'Email Edgar Ontiveros',
   },
   contact: {
     blurb:
       "Open to opportunities — if you're building something where machine learning meets production, let's talk.",
     github: 'GitHub',
     linkedin: 'LinkedIn',
+    whatsapp: 'WhatsApp',
   },
   ui: {
     themeToggle: {

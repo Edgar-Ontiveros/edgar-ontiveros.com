@@ -1,6 +1,12 @@
 import { useRef } from 'react'
 import { Constellation } from '../components/Constellation'
-import { ChevronDownIcon, GitHubIcon, LinkedInIcon } from '../components/icons'
+import {
+  ChevronDownIcon,
+  GitHubIcon,
+  LinkedInIcon,
+  MailIcon,
+  WhatsAppIcon,
+} from '../components/icons'
 import { CONSTELLATION_TECHNOLOGIES } from '../content/constellation'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
@@ -96,6 +102,18 @@ export function Hero({ content }: HeroProps) {
               className={socialClasses}
             >
               <LinkedInIcon className="h-6 w-6" />
+            </a>
+            <a
+              href={`https://wa.me/${site.whatsappNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={hero.whatsappLabel}
+              className={socialClasses}
+            >
+              <WhatsAppIcon className="h-6 w-6" />
+            </a>
+            <a href={`mailto:${site.email}`} aria-label={hero.emailLabel} className={socialClasses}>
+              <MailIcon className="h-6 w-6" />
             </a>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { GitHubIcon, LinkedInIcon } from '../components/icons'
+import { GitHubIcon, LinkedInIcon, WhatsAppIcon } from '../components/icons'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
 
@@ -44,6 +44,15 @@ export function Contact({ content }: ContactProps) {
             >
               <GitHubIcon className="h-5 w-5" />
               {contact.github}
+            </a>
+            <a
+              href={`https://wa.me/${site.whatsappNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClasses}
+            >
+              <WhatsAppIcon className="h-5 w-5" />
+              {contact.whatsapp}
             </a>
             <a href={site.cvPdf} download className={buttonClasses}>
               {content.hero.ctaDownloadCv}
