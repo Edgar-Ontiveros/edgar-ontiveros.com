@@ -7,6 +7,7 @@ import { Education } from './sections/Education'
 import { Experience } from './sections/Experience'
 import { Hero } from './sections/Hero'
 import { Projects } from './sections/Projects'
+import { Research } from './sections/Research'
 import { Stack } from './sections/Stack'
 
 function App() {
@@ -25,12 +26,10 @@ function App() {
         <Hero content={content} />
         <About content={content} />
         <Stack content={content} theme={theme} />
-        {/* Secciones aún vacías: existen para que las anclas de la nav no queden rotas.
-            tabIndex -1: al navegar a un ancla el foco aterriza en la sección. */}
         <Experience content={content} />
         <Projects content={content} />
         <Education content={content} />
-        <section id="research" tabIndex={-1} className="scroll-mt-16 outline-none" />
+        <Research content={content} />
         <Contact content={content} />
       </main>
     </>

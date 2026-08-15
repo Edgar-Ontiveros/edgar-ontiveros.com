@@ -1,4 +1,5 @@
 import type { ProjectId } from './projects'
+import type { ResearchId } from './research'
 import type { StackCategoryId } from './stack'
 
 /** Idiomas soportados por el sitio. */
@@ -116,6 +117,31 @@ export interface SiteContent {
     opensPdf: string
     /** Label del enlace al PDF original dentro del visor. */
     viewPdf: string
+  }
+  research: {
+    /** Textos por trabajo (los datos sin idioma viven en research.ts). */
+    items: Record<
+      ResearchId,
+      {
+        title: string
+        /** Evento o institución (y año cuando se conoce), línea meta en mono. */
+        event: string
+        description: string
+        /** Áreas/técnicas del doc, como chips de texto (sin icono). */
+        tags: string[]
+        /** Una entrada por asset, en el orden de research.ts. */
+        media: {
+          /** Etiqueta corta visible (imagen principal y fila de evidencia). */
+          label: string
+          alt: string
+          /** Título en el visor. */
+          title: string
+          /** Idioma del título si difiere del de la UI (documentos en español). */
+          titleLang?: string
+          subtitle?: string
+        }[]
+      }
+    >
   }
   contact: {
     blurb: string

@@ -176,6 +176,81 @@ export const es: SiteContent = {
     opensPdf: 'abre el PDF en una pestaña nueva',
     viewPdf: 'Ver PDF',
   },
+  research: {
+    items: {
+      melanoma: {
+        title: 'Detección temprana de melanoma con IA',
+        event: 'I Verano de Investigación Científica, UACH · 2023',
+        description:
+          'Lideré un proyecto de investigación sobre detección temprana de melanoma con redes neuronales convolucionales — un clasificador VGG16 con transfer learning sobre imágenes dermatoscópicas que alcanzó un F1-score de 88%. Presentado en la UACH.',
+        tags: ['TensorFlow/Keras', 'VGG16', 'Deep learning'],
+        media: [
+          {
+            label: 'Presentación',
+            alt: 'Edgar presentando el proyecto de detección de melanoma en la UACH, junto al póster proyectado',
+            title: 'Presentando el proyecto en la UACH',
+            subtitle: 'I Verano de Investigación Científica · 2023',
+          },
+          {
+            label: 'Reconocimiento',
+            alt: 'Reconocimiento por la participación activa en el I Verano de Investigación Científica, otorgado por la Facultad de Ingeniería de la UACH',
+            title: 'Reconocimiento — I Verano de Investigación Científica',
+            subtitle: 'Facultad de Ingeniería, UACH · 2023',
+          },
+        ],
+      },
+      fresnel: {
+        title: 'Coeficientes de Fresnel para optimización de paneles solares',
+        event: 'LXVII Congreso Nacional de Física, SMF · Oct 2024',
+        description:
+          'Validación teórico-experimental de los coeficientes de Fresnel con un láser de He-Ne, aplicada al diseño de recubrimientos antirreflejantes para paneles solares. Presentado como primer autor (póster, sesión de Óptica).',
+        tags: ['Óptica', 'Física experimental'],
+        media: [
+          {
+            label: 'En el congreso',
+            alt: 'Edgar presentando el póster de coeficientes de Fresnel a un asistente en el LXVII Congreso Nacional de Física',
+            title: 'Sesión de pósters en el LXVII Congreso Nacional de Física',
+            subtitle: 'Sociedad Mexicana de Física · Oct 2024',
+          },
+          {
+            label: 'Póster',
+            alt: 'Póster completo: análisis teórico-experimental de los coeficientes de Fresnel y su potencial aplicación en la optimización de paneles solares',
+            title:
+              'Análisis Teórico-Experimental de los Coeficientes de Fresnel y su Potencial Aplicación en la Optimización de Paneles Solares',
+            subtitle: 'Póster · LXVII Congreso Nacional de Física · Oct 2024',
+          },
+          {
+            label: 'Certificado',
+            alt: 'Certificado de participación en el LXVII Congreso Nacional de Física, expedido por la Sociedad Mexicana de Física',
+            title: 'Certificado de participación — LXVII Congreso Nacional de Física',
+            subtitle: 'Sociedad Mexicana de Física · Oct 2024',
+          },
+          {
+            label: 'Constancia de póster',
+            alt: 'Constancia de la Sociedad Mexicana de Física que acredita la presentación del póster en la sesión de Óptica',
+            title: 'Constancia de presentación de póster — sesión de Óptica',
+            subtitle: 'Sociedad Mexicana de Física · Oct 2024',
+          },
+        ],
+      },
+      raman: {
+        title: 'Espectroscopía Raman para control de calidad de licores',
+        event: 'UACH',
+        description:
+          'Cuantifiqué etanol en seis licores comerciales y busqué alcoholes tóxicos (metanol, isopropanol) mediante espectroscopía Raman — curvas de calibración por regresión lineal (R² 0.997) que validaron lo declarado en las etiquetas.',
+        tags: ['Espectroscopía', 'Análisis de datos', 'Regresión'],
+        media: [
+          {
+            label: 'Póster',
+            alt: 'Póster completo: cuantificación de etanol y detección de contaminantes tóxicos en licores comerciales mediante espectroscopía Raman',
+            title:
+              'Cuantificación de Etanol y Detección de Contaminantes Tóxicos en Licores Comerciales mediante Espectroscopía Raman',
+            subtitle: 'Póster · UACH',
+          },
+        ],
+      },
+    },
+  },
   contact: {
     blurb:
       'Abierto a oportunidades — si estás construyendo algo donde el machine learning se encuentra con producción, hablemos.',

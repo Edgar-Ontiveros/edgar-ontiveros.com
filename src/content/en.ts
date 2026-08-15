@@ -175,6 +175,86 @@ export const en: SiteContent = {
     opensPdf: 'opens PDF in a new tab',
     viewPdf: 'View PDF',
   },
+  research: {
+    items: {
+      melanoma: {
+        title: 'Early melanoma detection with AI',
+        event: '1st Scientific Research Summer, UACH · 2023',
+        description:
+          'Led a research project on early melanoma detection using convolutional neural networks — a VGG16 transfer-learning classifier over dermatoscopic images reaching an 88% F1-score. Presented at UACH.',
+        tags: ['TensorFlow/Keras', 'VGG16', 'Deep learning'],
+        media: [
+          {
+            label: 'Presentation',
+            alt: 'Edgar presenting the melanoma detection project at UACH, next to the projected poster',
+            title: 'Presenting the project at UACH',
+            subtitle: '1st Scientific Research Summer · 2023',
+          },
+          {
+            label: 'Recognition',
+            alt: 'Recognition for the active participation in the 1st Scientific Research Summer, issued by the UACH Faculty of Engineering',
+            title: 'Reconocimiento — I Verano de Investigación Científica',
+            titleLang: 'es',
+            subtitle: 'UACH Faculty of Engineering · 2023',
+          },
+        ],
+      },
+      fresnel: {
+        title: 'Fresnel coefficients for solar-panel optimization',
+        event: 'LXVII National Physics Congress, SMF · Oct 2024',
+        description:
+          'Theoretical-experimental validation of Fresnel coefficients with a He-Ne laser, applied to anti-reflective coating design for solar panels. Presented as first author (poster, Optics session).',
+        tags: ['Optics', 'Experimental physics'],
+        media: [
+          {
+            label: 'At the congress',
+            alt: 'Edgar presenting the Fresnel coefficients poster to an attendee at the LXVII National Physics Congress',
+            title: 'Poster session at the LXVII National Physics Congress',
+            subtitle: 'Sociedad Mexicana de Física · Oct 2024',
+          },
+          {
+            label: 'Poster (Spanish)',
+            alt: 'Full poster: theoretical-experimental analysis of Fresnel coefficients and their potential application to solar-panel optimization, in Spanish',
+            title:
+              'Análisis Teórico-Experimental de los Coeficientes de Fresnel y su Potencial Aplicación en la Optimización de Paneles Solares',
+            titleLang: 'es',
+            subtitle: 'Poster · LXVII National Physics Congress · Oct 2024',
+          },
+          {
+            label: 'Certificate',
+            alt: 'Certificate of participation in the LXVII National Physics Congress, issued by the Mexican Physical Society',
+            title: 'Certificado de participación — LXVII Congreso Nacional de Física',
+            titleLang: 'es',
+            subtitle: 'Sociedad Mexicana de Física · Oct 2024',
+          },
+          {
+            label: 'Poster credential',
+            alt: 'Letter from the Mexican Physical Society confirming the poster presentation in the Optics session',
+            title: 'Constancia de presentación de póster — sesión de Óptica',
+            titleLang: 'es',
+            subtitle: 'Sociedad Mexicana de Física · Oct 2024',
+          },
+        ],
+      },
+      raman: {
+        title: 'Raman spectroscopy for liquor quality control',
+        event: 'UACH',
+        description:
+          'Quantified ethanol in six commercial liquors and screened for toxic alcohols (methanol, isopropanol) via Raman spectroscopy — calibration curves by linear regression (R² 0.997) validated label claims.',
+        tags: ['Spectroscopy', 'Data analysis', 'Regression'],
+        media: [
+          {
+            label: 'Poster (Spanish)',
+            alt: 'Full poster: ethanol quantification and detection of toxic contaminants in commercial liquors via Raman spectroscopy, in Spanish',
+            title:
+              'Cuantificación de Etanol y Detección de Contaminantes Tóxicos en Licores Comerciales mediante Espectroscopía Raman',
+            titleLang: 'es',
+            subtitle: 'Poster · UACH',
+          },
+        ],
+      },
+    },
+  },
   contact: {
     blurb:
       "Open to opportunities — if you're building something where machine learning meets production, let's talk.",
