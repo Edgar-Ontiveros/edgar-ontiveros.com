@@ -14,6 +14,9 @@ export const site = {
       de education.entries / experience.roles. */
   orgLogos: {
     uach: '/logos/uach-ingenieria.webp',
+    herinox: '/logos/herinox.webp',
+    'safran-manufacturing': '/logos/safran.webp',
+    'safran-intern': '/logos/safran.webp',
   } as Record<string, string>,
   /** Fotos de proyecto por id de puesto (experience.roles). El asset publicado
       lleva el crop del doc: excluye a la persona del fondo del original. */
