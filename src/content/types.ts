@@ -40,6 +40,14 @@ export interface SiteContent {
     whatsappLabel: string
     emailLabel: string
   }
+  about: {
+    paragraphs: string[]
+    photoAlt: string
+    metrics: {
+      value: string
+      label: string
+    }[]
+  }
   contact: {
     blurb: string
     /** Labels visibles de los botones (nombres de marca, no se traducen). */

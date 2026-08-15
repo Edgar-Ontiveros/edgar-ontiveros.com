@@ -27,6 +27,19 @@ export const es: SiteContent = {
     whatsappLabel: 'Edgar Ontiveros en WhatsApp',
     emailLabel: 'Escribir a Edgar Ontiveros',
   },
+  about: {
+    paragraphs: [
+      'Soy ingeniero físico y terminé haciendo lo que mejor hacen los físicos: construir modelos que tienen que sobrevivir al contacto con la realidad. Hoy eso significa software en producción — diseño APIs REST en FastAPI, modelo datos en PostgreSQL, construyo interfaces en React y despliego en AWS con Docker y CI/CD.',
+      'El machine learning entra donde resuelve algo real — forecasting, clasificación, similarity matching — siempre entregado como una aplicación que la gente usa a diario, nunca un notebook que se queda en el análisis.',
+      'Actualmente construyo la plataforma interna que usan las 11 sucursales de Herinox; antes, automatización y sistemas de datos de producción en la industria aeroespacial, en Safran.',
+    ],
+    photoAlt: 'Retrato de Edgar Ontiveros',
+    metrics: [
+      { value: '2+', label: 'años entregando software' },
+      { value: '4', label: 'sistemas en producción' },
+      { value: '11', label: 'sucursales atendidas' },
+    ],
+  },
   contact: {
     blurb:
       'Abierto a oportunidades — si estás construyendo algo donde el machine learning se encuentra con producción, hablemos.',

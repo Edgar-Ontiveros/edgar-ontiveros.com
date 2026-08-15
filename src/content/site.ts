@@ -9,4 +9,5 @@ export const site = {
   github: 'https://github.com/Edgar-Ontiveros',
   linkedin: 'https://www.linkedin.com/in/edgaronti',
   cvPdf: '/cv/edgar-ontiveros-cv.pdf',
+  aboutPhoto: '/images/cv-photo.webp',
 } as const

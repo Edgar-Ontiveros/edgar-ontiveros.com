@@ -27,6 +27,19 @@ export const en: SiteContent = {
     whatsappLabel: 'Edgar Ontiveros on WhatsApp',
     emailLabel: 'Email Edgar Ontiveros',
   },
+  about: {
+    paragraphs: [
+      "I'm a physics engineer who ended up doing what physicists do best: building models that have to survive contact with reality. Today that means production software — I design REST APIs in FastAPI, model data in PostgreSQL, build interfaces in React, and deploy on AWS with Docker and CI/CD.",
+      'Machine learning goes in where it solves something real — forecasting, classification, similarity matching — always shipped as an application people use daily, never a notebook that stops at the analysis.',
+      "Currently building the internal platform used across Herinox's 11 branches; previously, automation and production data systems in aerospace at Safran.",
+    ],
+    photoAlt: 'Portrait of Edgar Ontiveros',
+    metrics: [
+      { value: '2+', label: 'years shipping' },
+      { value: '4', label: 'systems in production' },
+      { value: '11', label: 'branches served' },
+    ],
+  },
   contact: {
     blurb:
       "Open to opportunities — if you're building something where machine learning meets production, let's talk.",
