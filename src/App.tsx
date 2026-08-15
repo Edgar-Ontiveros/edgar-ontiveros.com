@@ -1,3 +1,4 @@
+import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { useLanguage } from './hooks/useLanguage'
 import { useTheme } from './hooks/useTheme'
@@ -32,6 +33,7 @@ function App() {
         <Research content={content} />
         <Contact content={content} />
       </main>
+      <Footer content={content} />
     </>
   )
 }

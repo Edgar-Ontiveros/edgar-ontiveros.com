@@ -262,6 +262,10 @@ export const en: SiteContent = {
     linkedin: 'LinkedIn',
     whatsapp: 'WhatsApp',
   },
+  footer: {
+    navAriaLabel: 'Footer navigation',
+    tagline: 'Built with React + Vite · Deployed on Cloudflare Pages',
+  },
   ui: {
     themeToggle: {
       toLight: 'Switch to light theme',

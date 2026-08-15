@@ -150,6 +150,14 @@ export interface SiteContent {
     linkedin: string
     whatsapp: string
   }
+  footer: {
+    /** Nombre accesible de la mini-nav (distinto al del header, para que el
+        lector de pantalla no anuncie dos navegaciones idénticas). */
+    navAriaLabel: string
+    /** Créditos tras el copyright ("Built with…"), del doc. El año y el
+        nombre se componen en runtime con hero.name. */
+    tagline: string
+  }
   ui: {
     themeToggle: {
       toLight: string
