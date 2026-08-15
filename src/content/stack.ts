@@ -2,9 +2,6 @@
  * Stack tecnológico agrupado por categoría, según docs/estructura-portfolio.md
  * (sección "3 · Stack"). Los nombres de tecnologías no se traducen; los nombres
  * de las categorías viven en en.ts/es.ts indexados por StackCategoryId.
- *
- * Niveles de uso como etiqueta textual + color, nunca barras de porcentaje:
- * daily → --accent · solid → --text-muted · learning → --accent-2.
  */
 export const STACK_CATEGORY_IDS = [
   'backend',
@@ -18,83 +15,54 @@ export const STACK_CATEGORY_IDS = [
 
 export type StackCategoryId = (typeof STACK_CATEGORY_IDS)[number]
 
-export type StackLevel = 'daily' | 'solid' | 'learning'
-
-export interface StackTechnology {
-  name: string
-  level: StackLevel
-}
-
 export interface StackCategory {
   id: StackCategoryId
-  technologies: StackTechnology[]
+  technologies: string[]
+}
+
+/**
+ * Monogramas para tecnologías sin logo en simple-icons (restricciones de
+ * marca: AWS, Power BI; sin logo registrado: Alembic, mypy) y conceptos que no
+ * son productos. Texto visible: vive aquí, en la capa de contenido (no se
+ * traduce, como los nombres de tecnología).
+ */
+export const TECH_MONOGRAMS: Record<string, string> = {
+  'REST APIs': 'API',
+  SQL: 'SQL',
+  Alembic: 'AL',
+  'AWS EC2/EBS': 'AWS',
+  Forecasting: 'FC',
+  mypy: 'my',
+  'Power BI': 'BI',
 }
 
 export const STACK_CATEGORIES: StackCategory[] = [
   {
     id: 'backend',
-    technologies: [
-      { name: 'Python', level: 'daily' },
-      { name: 'FastAPI', level: 'daily' },
-      { name: 'Pydantic', level: 'daily' },
-      { name: 'SQLAlchemy', level: 'daily' },
-      { name: 'Django', level: 'solid' },
-      { name: 'REST APIs', level: 'daily' },
-    ],
+    technologies: ['Python', 'FastAPI', 'Pydantic', 'SQLAlchemy', 'Django', 'REST APIs'],
   },
   {
     id: 'databases',
-    technologies: [
-      { name: 'PostgreSQL', level: 'daily' },
-      { name: 'SQL', level: 'daily' },
-      { name: 'Alembic', level: 'solid' },
-      { name: 'SQLite', level: 'solid' },
-      { name: 'Supabase', level: 'solid' },
-    ],
+    technologies: ['PostgreSQL', 'SQL', 'Alembic', 'SQLite', 'Supabase'],
   },
   {
     id: 'cloud',
-    technologies: [
-      { name: 'Docker', level: 'daily' },
-      { name: 'AWS EC2/EBS', level: 'solid' },
-      { name: 'GitHub Actions', level: 'solid' },
-      { name: 'nginx', level: 'solid' },
-      { name: 'Linux', level: 'daily' },
-    ],
+    technologies: ['Docker', 'AWS EC2/EBS', 'GitHub Actions', 'nginx', 'Linux'],
   },
   {
     id: 'ml',
-    technologies: [
-      { name: 'scikit-learn', level: 'solid' },
-      { name: 'TensorFlow/Keras', level: 'solid' },
-      { name: 'Pandas', level: 'daily' },
-      { name: 'NumPy', level: 'daily' },
-      { name: 'Forecasting', level: 'solid' },
-    ],
+    technologies: ['scikit-learn', 'TensorFlow/Keras', 'Pandas', 'NumPy', 'Forecasting'],
   },
   {
     id: 'frontend',
-    technologies: [
-      { name: 'React', level: 'daily' },
-      { name: 'TypeScript', level: 'daily' },
-      { name: 'Vite', level: 'daily' },
-      { name: 'Streamlit', level: 'solid' },
-    ],
+    technologies: ['React', 'TypeScript', 'Vite', 'Streamlit'],
   },
   {
     id: 'quality',
-    technologies: [
-      { name: 'pytest', level: 'daily' },
-      { name: 'ruff', level: 'daily' },
-      { name: 'mypy', level: 'solid' },
-      { name: 'Git', level: 'daily' },
-    ],
+    technologies: ['pytest', 'ruff', 'mypy', 'Git'],
   },
   {
     id: 'bi',
-    technologies: [
-      { name: 'Power BI', level: 'solid' },
-      { name: 'SAP', level: 'solid' },
-    ],
+    technologies: ['Power BI', 'SAP'],
   },
 ]

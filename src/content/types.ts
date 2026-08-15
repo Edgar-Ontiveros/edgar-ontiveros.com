@@ -1,4 +1,4 @@
-import type { StackCategoryId, StackLevel } from './stack'
+import type { StackCategoryId } from './stack'
 
 /** Idiomas soportados por el sitio. */
 export type Language = 'en' | 'es'
@@ -43,9 +43,6 @@ export interface SiteContent {
     emailLabel: string
   }
   stack: {
-    /** Nombre accesible de la leyenda de niveles de uso. */
-    legendLabel: string
-    levels: Record<StackLevel, string>
     categories: Record<StackCategoryId, string>
   }
   about: {

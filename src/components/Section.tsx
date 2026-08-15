@@ -4,6 +4,15 @@ import type { SectionId } from '../content/types'
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
+/**
+ * Capa de entrada con stagger para los hijos de una Section: anima solo
+ * opacity/transform, dirigida por la clase marcadora `revealed` del shell.
+ * El retardo por elemento se pasa con style={{ transitionDelay }} en una capa
+ * SIN transiciones de hover, para que el delay no entorpezca la interacción.
+ */
+export const revealStaggerClasses =
+  'translate-y-2 opacity-0 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none [.revealed_&]:translate-y-0 [.revealed_&]:opacity-100'
+
 interface SectionProps {
   id: SectionId
   /** Número decorativo de la sección (p. ej. "02"). */
@@ -70,9 +79,11 @@ export function Section({ id, number, title, className, children }: SectionProps
       className={`scroll-mt-16 outline-none ${className ?? ''}`}
     >
       <div className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6 sm:py-28">
+        {/* La clase marcadora `revealed` permite a los hijos definir sus propias
+            animaciones de entrada escalonadas vía [.revealed_&]. */}
         <div
           className={`transition-all duration-700 ease-out motion-reduce:transition-none ${
-            revealed ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+            revealed ? 'revealed translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
           }`}
         >
           <div className="mb-10 flex items-center gap-4 sm:mb-12">

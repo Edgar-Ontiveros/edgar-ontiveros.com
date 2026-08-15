@@ -28,12 +28,6 @@ export const en: SiteContent = {
     emailLabel: 'Email Edgar Ontiveros',
   },
   stack: {
-    legendLabel: 'Usage level',
-    levels: {
-      daily: 'daily',
-      solid: 'solid',
-      learning: 'learning',
-    },
     categories: {
       backend: 'Backend & APIs',
       databases: 'Databases',

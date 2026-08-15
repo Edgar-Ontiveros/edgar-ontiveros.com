@@ -28,12 +28,6 @@ export const es: SiteContent = {
     emailLabel: 'Escribir a Edgar Ontiveros',
   },
   stack: {
-    legendLabel: 'Nivel de uso',
-    levels: {
-      daily: 'diario',
-      solid: 'sólido',
-      learning: 'aprendiendo',
-    },
     categories: {
       backend: 'Backend y APIs',
       databases: 'Bases de datos',
