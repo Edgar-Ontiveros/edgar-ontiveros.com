@@ -54,10 +54,15 @@ export interface SiteContent {
     }[]
   }
   education: {
-    degree: string
-    institution: string
-    period: string
-    detail: string
+    /** Entradas de la línea de tiempo académica, de más reciente a más antigua. */
+    entries: {
+      /** Clave para datos sin idioma (p. ej. el logo en site.institutionLogos). */
+      id: string
+      institution: string
+      degree: string
+      location: string
+      period: string
+    }[]
     certificationsTitle: string
     /** Aviso accesible en cada enlace de certificado. */
     opensPdf: string

@@ -52,10 +52,15 @@ export const en: SiteContent = {
     ],
   },
   education: {
-    degree: 'B.Sc. in Physics Engineering',
-    institution: 'Autonomous University of Chihuahua',
-    period: '2019–2024',
-    detail: 'Vice President, Student Council',
+    entries: [
+      {
+        id: 'uach',
+        institution: 'Autonomous University of Chihuahua',
+        degree: 'B.Sc. in Physics Engineering',
+        location: 'Chihuahua, MX',
+        period: '2019–2024',
+      },
+    ],
     certificationsTitle: 'Certifications',
     opensPdf: 'opens PDF in a new tab',
   },

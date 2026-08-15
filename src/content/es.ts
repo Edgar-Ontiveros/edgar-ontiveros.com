@@ -52,10 +52,15 @@ export const es: SiteContent = {
     ],
   },
   education: {
-    degree: 'Licenciatura en Ingeniería Física',
-    institution: 'Universidad Autónoma de Chihuahua',
-    period: '2019–2024',
-    detail: 'Vicepresidente del Consejo Estudiantil',
+    entries: [
+      {
+        id: 'uach',
+        institution: 'Universidad Autónoma de Chihuahua',
+        degree: 'Licenciatura en Ingeniería Física',
+        location: 'Chihuahua, MX',
+        period: '2019–2024',
+      },
+    ],
     certificationsTitle: 'Certificaciones',
     opensPdf: 'abre el PDF en una pestaña nueva',
   },

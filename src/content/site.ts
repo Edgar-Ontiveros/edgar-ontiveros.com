@@ -10,4 +10,8 @@ export const site = {
   linkedin: 'https://www.linkedin.com/in/edgaronti',
   cvPdf: '/cv/edgar-ontiveros-cv.pdf',
   aboutPhoto: '/images/cv-photo.webp',
+  /** Logos de instituciones, por id de entrada de education.entries. */
+  institutionLogos: {
+    uach: '/logos/uach-ingenieria.webp',
+  } as Record<string, string>,
 } as const
