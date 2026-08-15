@@ -51,6 +51,46 @@ export const en: SiteContent = {
       { value: '11', label: 'branches served' },
     ],
   },
+  experience: {
+    roles: [
+      {
+        id: 'herinox',
+        company: 'Herinox',
+        role: 'Data Scientist / ML Engineer',
+        period: 'Apr 2026 – Present',
+        location: 'Mexico',
+        intro: "Building the internal software platform used across the company's 11 branches.",
+        bullets: [
+          'Design and ship full-stack internal tools — FastAPI, PostgreSQL and React + TypeScript — replacing manual Excel workflows for the sales, purchasing and pricing teams.',
+          'Operate services on AWS EC2 with Docker, nginx and GitHub Actions; tests, linting and type checks gate every production release.',
+          'Apply ML to operations: auto-generating SAP article codes from free-text descriptions (scikit-learn + fuzzy matching) and forecasting sales, demand and inventory across all branches.',
+        ],
+        technologies: ['FastAPI', 'PostgreSQL', 'React', 'AWS', 'Docker', 'scikit-learn'],
+      },
+      {
+        id: 'safran-manufacturing',
+        company: 'Safran Aerosystems',
+        role: 'Manufacturing Engineer 4.0',
+        period: 'Sep 2025 – Apr 2026',
+        location: 'Chihuahua, MX',
+        bullets: [
+          'Built Python monitoring for automated production lines, flagging anomalies in live machine data before they reached scrap.',
+          'Led an electric-torque automation project that replaced a manual tightening operation — digitized traceability and reduced torque-related defects.',
+        ],
+        technologies: ['Python', 'Industrial automation', 'Data monitoring'],
+      },
+      {
+        id: 'safran-intern',
+        company: 'Safran Aerosystems',
+        role: 'Project Engineer Intern',
+        period: 'Nov 2024 – Jul 2025',
+        location: 'Chihuahua, MX',
+        bullets: [
+          'Supported the industrial transfer of production lines from Niort, France — standardizing processes and automation for the new site.',
+        ],
+      },
+    ],
+  },
   education: {
     entries: [
       {

@@ -53,10 +53,26 @@ export interface SiteContent {
       label: string
     }[]
   }
+  experience: {
+    /** Puestos en orden cronológico inverso (el más reciente primero). */
+    roles: {
+      /** Clave para datos sin idioma (p. ej. el logo en site.orgLogos). */
+      id: string
+      company: string
+      role: string
+      period: string
+      location: string
+      /** Línea introductoria opcional (cursiva en el doc). */
+      intro?: string
+      bullets: string[]
+      /** Tags de tecnología del doc; se omiten si el doc no los da. */
+      technologies?: string[]
+    }[]
+  }
   education: {
     /** Entradas de la línea de tiempo académica, de más reciente a más antigua. */
     entries: {
-      /** Clave para datos sin idioma (p. ej. el logo en site.institutionLogos). */
+      /** Clave para datos sin idioma (p. ej. el logo en site.orgLogos). */
       id: string
       institution: string
       degree: string

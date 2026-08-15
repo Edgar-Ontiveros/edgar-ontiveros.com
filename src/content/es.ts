@@ -51,6 +51,47 @@ export const es: SiteContent = {
       { value: '11', label: 'sucursales atendidas' },
     ],
   },
+  experience: {
+    roles: [
+      {
+        id: 'herinox',
+        company: 'Herinox',
+        role: 'Data Scientist / ML Engineer',
+        period: 'Abr 2026 – Actual',
+        location: 'México',
+        intro:
+          'Construyendo la plataforma interna de software que usan las 11 sucursales de la empresa.',
+        bullets: [
+          'Diseño y entrego herramientas internas full-stack — FastAPI, PostgreSQL y React + TypeScript — que reemplazan flujos manuales de Excel para los equipos de ventas, compras y precios.',
+          'Opero los servicios en AWS EC2 con Docker, nginx y GitHub Actions; tests, linting y chequeo de tipos condicionan cada release a producción.',
+          'Aplico ML a la operación: generación automática de códigos de artículo SAP a partir de descripciones libres (scikit-learn + fuzzy matching) y forecasting de ventas, demanda e inventario en todas las sucursales.',
+        ],
+        technologies: ['FastAPI', 'PostgreSQL', 'React', 'AWS', 'Docker', 'scikit-learn'],
+      },
+      {
+        id: 'safran-manufacturing',
+        company: 'Safran Aerosystems',
+        role: 'Ingeniero de Manufactura 4.0',
+        period: 'Sep 2025 – Abr 2026',
+        location: 'Chihuahua, MX',
+        bullets: [
+          'Construí monitoreo en Python para líneas de producción automatizadas, señalando anomalías en datos de máquina en vivo antes de que llegaran a scrap.',
+          'Lideré un proyecto de automatización de torque eléctrico que reemplazó una operación manual de apriete — trazabilidad digitalizada y menos defectos de torque.',
+        ],
+        technologies: ['Python', 'Industrial automation', 'Data monitoring'],
+      },
+      {
+        id: 'safran-intern',
+        company: 'Safran Aerosystems',
+        role: 'Practicante de Ingeniería de Proyectos',
+        period: 'Nov 2024 – Jul 2025',
+        location: 'Chihuahua, MX',
+        bullets: [
+          'Apoyé la transferencia industrial de líneas de producción desde Niort, Francia — estandarizando procesos y automatización para la nueva planta.',
+        ],
+      },
+    ],
+  },
   education: {
     entries: [
       {
