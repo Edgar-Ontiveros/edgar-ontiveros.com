@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Constellation } from '../components/Constellation'
 import { ChevronDownIcon, GitHubIcon, LinkedInIcon } from '../components/icons'
-import { CONSTELLATION_NODES } from '../content/constellation'
+import { CONSTELLATION_TECHNOLOGIES } from '../content/constellation'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
 import { useTypewriter } from '../hooks/useTypewriter'
@@ -106,7 +106,7 @@ export function Hero({ content }: HeroProps) {
           ser la única fuente de esa información. role="list" explícito porque
           el preflight pone list-style:none y Safari/VoiceOver quitaría el rol. */}
       <ul role="list" aria-label={hero.stackLabel} className="sr-only">
-        {CONSTELLATION_NODES.map((tech) => (
+        {CONSTELLATION_TECHNOLOGIES.map((tech) => (
           <li key={tech}>{tech}</li>
         ))}
       </ul>

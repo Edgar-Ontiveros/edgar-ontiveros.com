@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
-import { CONSTELLATION_NODES, CONSTELLATION_NODES_MOBILE } from '../content/constellation'
+import { CONSTELLATION_TECHNOLOGIES } from '../content/constellation'
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 const LIGHT_SCHEME_QUERY = '(prefers-color-scheme: light)'
@@ -8,45 +8,50 @@ const LIGHT_SCHEME_QUERY = '(prefers-color-scheme: light)'
 // layout CSS conmuten en el mismo punto (rect.width excluye la scrollbar).
 const DESKTOP_QUERY = '(min-width: 768px)'
 
-// Márgenes para que los labels no se corten en los bordes del canvas; el
-// inferior es mayor para dejar libre la franja del indicador de scroll.
-const MARGIN_X = 56
-const MARGIN_TOP = 44
-const MARGIN_BOTTOM = 84
-// Holgura de la zona de exclusión: mitad del label más ancho + halo +
-// penetración del empuje blando + parallax.
-const ZONE_PADDING = 56
-const NODE_RADIUS = 2.5
-const HALO_RADIUS = 9
-const HIT_RADIUS = 28
+// ── Densidad: una sola red homogénea, proporcional al área del canvas ──
+const DENSITY_DESKTOP = 1 / 11000 // nodos por px²
+const DENSITY_MOBILE = 1 / 16000
+const MIN_NODES = 24
+const MAX_NODES = 140
+/** Re-siembra solo si el objetivo difiere >15% del actual (evita pops al redimensionar). */
+const RESEED_TOLERANCE = 0.15
+
+// ── Nodos (pequeños, con variación sutil para dar profundidad) ──
+const NODE_RADIUS_MIN = 1.2
+const NODE_RADIUS_MAX = 2.2
+const NODE_ALPHA_MIN = 0.45
+const NODE_ALPHA_MAX = 0.9
+const HOVER_RADIUS_BOOST = 2
+const HALO_RADIUS = 8
+
+// ── Enlaces por proximidad ──
+const LINK_ALPHA = 0.3
+const LINK_DISTANCE_FACTOR = 1.2 // × espaciado medio entre nodos
+const LINK_DISTANCE_MIN = 80
+const LINK_DISTANCE_MAX = 150
+
+// ── Movimiento (drift orgánico, guiado suave en los bordes) ──
+const EDGE_MARGIN = 8
+const EDGE_STEER_ZONE = 48
+const EDGE_STEER = 20 // px/s² hacia adentro
+const MIN_SPEED = 4
+const DRIFT_SPEED = 5 // + aleatorio
+const MAX_SPEED = 16
+const WANDER = 6 // px/s² de deriva orgánica
 const PULL_RADIUS = 180
 const MAX_PULL = 10
-const MIN_SPEED = 6
-const DRIFT_SPEED = 10
-const MAX_SPEED = 26
-const EXCLUSION_PUSH = 30
 
-// ── Malla de fondo (capa decorativa, sin interacción) ──
-const MESH_COUNT_DESKTOP = 26
-const MESH_COUNT_MOBILE = 12
-const MESH_MARGIN = 12
-const MESH_LINK_DISTANCE = 110
-const MESH_MIN_SPEED = 1.5
-const MESH_DRIFT_SPEED = 2.5
-const MESH_DOT_RADIUS = 1.3
-const MESH_DOT_ALPHA = 0.2
-const MESH_LINK_ALPHA = 0.12
-
-// ── Resaltado táctil de la capa de nodos ──
+// ── Interacción y labels (solo visibles en hover/tap, con fade) ──
+const HIT_RADIUS = 26
 const TOUCH_HIT_RADIUS = 36
-const TOUCH_HIGHLIGHT_MS = 2000
+const TOUCH_HIGHLIGHT_MS = 2500
+const LABEL_FADE_RATE = 8 // 1/s
+const FOCUS_DIM = 0.55 // atenuación del resto con un nodo activo
 
-interface MeshPoint {
-  x: number
-  y: number
-  vx: number
-  vy: number
-}
+// ── Atenuación gradual tras el bloque de texto del hero ──
+const ZONE_MIN_FADE = 0.22 // opacidad mínima en el centro de la zona
+const ZONE_FEATHER = 90 // px de transición suave en los bordes
+const ZONE_PADDING = 12
 
 interface ConstellationNode {
   label: string
@@ -57,6 +62,14 @@ interface ConstellationNode {
   /** Offset de parallax hacia el cursor (no altera la física del drift). */
   ox: number
   oy: number
+  radius: number
+  baseAlpha: number
+  /** Fase del wander, para que cada nodo derive distinto. */
+  phase: number
+  /** Intensidad de resaltado/label 0..1 (easing del fade in/out). */
+  t: number
+  /** Atenuación por la zona del texto, recalculada por frame en draw(). */
+  fade: number
 }
 
 interface ExclusionZone {
@@ -88,10 +101,12 @@ function readThemeStyle(): ThemeStyle {
   }
 }
 
+const clamp = (min: number, max: number, value: number) => Math.min(max, Math.max(min, value))
+
 interface ConstellationProps {
   /** Elemento que recibe los eventos de puntero (el canvas es pointer-events: none). */
   hostRef: RefObject<HTMLElement | null>
-  /** Bloque de texto del hero: define la zona de exclusión en desktop. */
+  /** Bloque de texto del hero: define la zona de atenuación en desktop. */
   textRef: RefObject<HTMLDivElement | null>
 }
 
@@ -122,10 +137,9 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     let theme = readThemeStyle()
     let width = 0
     let height = 0
-    let linkDistance = 160
+    let linkDistance = LINK_DISTANCE_MIN
     let zone: ExclusionZone | null = null
     let nodes: ConstellationNode[] = []
-    let meshPoints: MeshPoint[] = []
     let hoveredIndex = -1
     let touchIndex = -1
     let touchUntil = 0
@@ -134,14 +148,27 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     let inViewport = true
     let rafId = 0
     let lastTime = 0
+    let wanderClock = 0
     let resizeTimer = 0
     let disposed = false
 
-    const insideZone = (z: ExclusionZone, x: number, y: number) =>
-      x > z.x0 && x < z.x1 && y > z.y0 && y < z.y1
+    // Atenuación gradual dentro de la zona del texto: 1 fuera, baja con
+    // smoothstep hasta ZONE_MIN_FADE en el interior profundo.
+    const zoneFade = (x: number, y: number) => {
+      if (!zone) {
+        return 1
+      }
+      const depth = Math.min(x - zone.x0, zone.x1 - x, y - zone.y0, zone.y1 - y)
+      if (depth <= 0) {
+        return 1
+      }
+      const step = Math.min(1, depth / ZONE_FEATHER)
+      const smooth = step * step * (3 - 2 * step)
+      return 1 - (1 - ZONE_MIN_FADE) * smooth
+    }
 
-    // Zona de exclusión medida del rect real del bloque de texto (sus hijos
-    // encogen a su contenido con items-start), con fallback por fracciones.
+    // Zona medida del rect real del bloque de texto (sus hijos encogen a su
+    // contenido con items-start), con fallback por fracciones.
     const measureZone = (): ExclusionZone | null => {
       if (!window.matchMedia(DESKTOP_QUERY).matches) {
         return null
@@ -162,154 +189,150 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
         }
         if (right > left) {
           return {
-            x0: Math.max(0, left - canvasRect.left - ZONE_PADDING),
-            y0: Math.max(0, top - canvasRect.top - ZONE_PADDING),
-            x1: Math.min(width, right - canvasRect.left + ZONE_PADDING),
-            y1: Math.min(height, bottom - canvasRect.top + ZONE_PADDING),
+            x0: left - canvasRect.left - ZONE_PADDING,
+            y0: top - canvasRect.top - ZONE_PADDING,
+            x1: right - canvasRect.left + ZONE_PADDING,
+            y1: bottom - canvasRect.top + ZONE_PADDING,
           }
         }
       }
       return { x0: 0, y0: height * 0.24, x1: width * 0.52, y1: height * 0.78 }
     }
 
-    const randomPoint = () => {
-      let x = 0
-      let y = 0
-      // Rechazo contra la zona de exclusión, con tope de intentos.
-      for (let attempt = 0; attempt < 40; attempt += 1) {
-        x = MARGIN_X + Math.random() * Math.max(1, width - MARGIN_X * 2)
-        y = MARGIN_TOP + Math.random() * Math.max(1, height - MARGIN_TOP - MARGIN_BOTTOM)
-        if (!zone || !insideZone(zone, x, y)) {
-          break
-        }
-      }
-      return { x, y }
-    }
-
-    const seedNodes = (labels: readonly string[]) => {
-      // Un re-seed invalida cualquier resaltado táctil pendiente: el índice
-      // guardado apuntaría a un nodo recién sembrado que nunca fue tocado.
+    const seedNodes = (target: number) => {
+      // Un re-seed invalida cualquier resaltado táctil pendiente.
       touchIndex = -1
       touchUntil = 0
-      nodes = labels.map((label) => {
-        const { x, y } = randomPoint()
+      // Baraja el vocabulario y repártelo cíclicamente (puede repetirse).
+      const vocabulary = [...CONSTELLATION_TECHNOLOGIES]
+      for (let i = vocabulary.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[vocabulary[i], vocabulary[j]] = [vocabulary[j], vocabulary[i]]
+      }
+      nodes = Array.from({ length: target }, (_, index) => {
         const angle = Math.random() * Math.PI * 2
         const speed = MIN_SPEED + Math.random() * DRIFT_SPEED
         return {
-          label,
-          x,
-          y,
+          label: vocabulary[index % vocabulary.length],
+          x: EDGE_MARGIN + Math.random() * Math.max(1, width - EDGE_MARGIN * 2),
+          y: EDGE_MARGIN + Math.random() * Math.max(1, height - EDGE_MARGIN * 2),
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           ox: 0,
           oy: 0,
+          radius: NODE_RADIUS_MIN + Math.random() * (NODE_RADIUS_MAX - NODE_RADIUS_MIN),
+          baseAlpha: NODE_ALPHA_MIN + Math.random() * (NODE_ALPHA_MAX - NODE_ALPHA_MIN),
+          phase: Math.random() * Math.PI * 2,
+          t: 0,
+          fade: 1,
         }
       })
     }
 
-    const seedMesh = (count: number) => {
-      meshPoints = Array.from({ length: count }, () => {
-        const angle = Math.random() * Math.PI * 2
-        const speed = MESH_MIN_SPEED + Math.random() * MESH_DRIFT_SPEED
-        return {
-          x: MESH_MARGIN + Math.random() * Math.max(1, width - MESH_MARGIN * 2),
-          y: MESH_MARGIN + Math.random() * Math.max(1, height - MESH_MARGIN * 2),
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
+    const findNodeAt = (x: number, y: number, radius: number) => {
+      let best = radius
+      let found = -1
+      for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i]
+        const distance = Math.hypot(x - (node.x + node.ox), y - (node.y + node.oy))
+        if (distance < best) {
+          best = distance
+          found = i
         }
-      })
+      }
+      return found
     }
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height)
       const { accent, muted, fontMono, dim } = theme
-      const hovered = hoveredIndex
 
-      // Capa de fondo: malla decorativa, mucho más tenue que los nodos.
-      ctx.lineWidth = 1
-      ctx.strokeStyle = muted
-      for (let i = 0; i < meshPoints.length; i += 1) {
-        for (let j = i + 1; j < meshPoints.length; j += 1) {
-          const a = meshPoints[i]
-          const b = meshPoints[j]
-          const distance = Math.hypot(b.x - a.x, b.y - a.y)
-          if (distance >= MESH_LINK_DISTANCE) {
-            continue
-          }
-          ctx.globalAlpha = dim * MESH_LINK_ALPHA * (1 - distance / MESH_LINK_DISTANCE)
-          ctx.beginPath()
-          ctx.moveTo(a.x, a.y)
-          ctx.lineTo(b.x, b.y)
-          ctx.stroke()
+      let maxT = 0
+      for (const node of nodes) {
+        node.fade = zoneFade(node.x + node.ox, node.y + node.oy)
+        if (node.t > maxT) {
+          maxT = node.t
         }
       }
-      ctx.fillStyle = muted
-      ctx.globalAlpha = dim * MESH_DOT_ALPHA
-      for (const point of meshPoints) {
-        ctx.beginPath()
-        ctx.arc(point.x, point.y, MESH_DOT_RADIUS, 0, Math.PI * 2)
-        ctx.fill()
-      }
 
-      // Capa frontal: enlaces por proximidad, opacidad proporcional a la cercanía.
+      // Enlaces por proximidad: la red se teje y desteje conforme derivan.
+      const linkDistance2 = linkDistance * linkDistance
       ctx.lineWidth = 1
       for (let i = 0; i < nodes.length; i += 1) {
         for (let j = i + 1; j < nodes.length; j += 1) {
           const a = nodes[i]
           const b = nodes[j]
-          const ax = a.x + a.ox
-          const ay = a.y + a.oy
-          const bx = b.x + b.ox
-          const by = b.y + b.oy
-          const distance = Math.hypot(bx - ax, by - ay)
-          if (distance >= linkDistance) {
+          const dx = b.x + b.ox - (a.x + a.ox)
+          const dy = b.y + b.oy - (a.y + a.oy)
+          const d2 = dx * dx + dy * dy
+          if (d2 >= linkDistance2) {
             continue
           }
+          const distance = Math.sqrt(d2)
           const closeness = 1 - distance / linkDistance
-          const linkHovered = hovered !== -1 && (i === hovered || j === hovered)
-          if (linkHovered) {
-            ctx.strokeStyle = accent
-            ctx.globalAlpha = 0.25 + 0.65 * closeness
-          } else {
-            ctx.strokeStyle = muted
-            ctx.globalAlpha = dim * 0.35 * closeness * (hovered !== -1 ? 0.3 : 1)
-          }
+          const fade = Math.min(a.fade, b.fade)
+          ctx.strokeStyle = muted
+          ctx.globalAlpha = dim * LINK_ALPHA * closeness * fade * (1 - FOCUS_DIM * maxT)
           ctx.beginPath()
-          ctx.moveTo(ax, ay)
-          ctx.lineTo(bx, by)
+          ctx.moveTo(a.x + a.ox, a.y + a.oy)
+          ctx.lineTo(b.x + b.ox, b.y + b.oy)
           ctx.stroke()
+          const highlight = Math.max(a.t, b.t)
+          if (highlight > 0.01) {
+            ctx.strokeStyle = accent
+            ctx.globalAlpha = highlight * closeness * 0.9 * Math.max(fade, 0.5)
+            ctx.beginPath()
+            ctx.moveTo(a.x + a.ox, a.y + a.oy)
+            ctx.lineTo(b.x + b.ox, b.y + b.oy)
+            ctx.stroke()
+          }
         }
       }
 
+      // Nodos: puntos pequeños; el activo crece y sube a opacidad plena.
+      ctx.fillStyle = accent
+      for (const node of nodes) {
+        const x = node.x + node.ox
+        const y = node.y + node.oy
+        if (node.t > 0.01) {
+          ctx.globalAlpha = node.t * 0.18
+          ctx.beginPath()
+          ctx.arc(x, y, HALO_RADIUS, 0, Math.PI * 2)
+          ctx.fill()
+        }
+        const base = dim * node.baseAlpha * node.fade * (1 - FOCUS_DIM * maxT * (1 - node.t))
+        ctx.globalAlpha = Math.max(base, node.t * Math.max(node.fade, 0.6))
+        ctx.beginPath()
+        ctx.arc(x, y, node.radius + HOVER_RADIUS_BOOST * node.t, 0, Math.PI * 2)
+        ctx.fill()
+      }
+
+      // Labels: solo nodos activos (o en fade), reposicionados si tocan un borde.
       ctx.font = `11px ${fontMono}`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
-      for (let i = 0; i < nodes.length; i += 1) {
-        const node = nodes[i]
+      for (const node of nodes) {
+        if (node.t <= 0.02) {
+          continue
+        }
         const x = node.x + node.ox
         const y = node.y + node.oy
-        const isHovered = i === hovered
-        const dimmed = hovered !== -1 && !isHovered
-
+        const textWidth = ctx.measureText(node.label).width
+        const labelX = clamp(4 + textWidth / 2, width - 4 - textWidth / 2, x)
+        let labelY = y + node.radius + HOVER_RADIUS_BOOST + 6
+        if (labelY + 14 > height - 2) {
+          labelY = y - node.radius - HOVER_RADIUS_BOOST - 17
+        }
         ctx.fillStyle = accent
-        ctx.globalAlpha = isHovered ? 0.28 : dim * 0.1 * (dimmed ? 0.5 : 1)
-        ctx.beginPath()
-        ctx.arc(x, y, isHovered ? HALO_RADIUS + 3 : HALO_RADIUS, 0, Math.PI * 2)
-        ctx.fill()
-
-        ctx.globalAlpha = isHovered ? 1 : dim * (dimmed ? 0.35 : 0.85)
-        ctx.beginPath()
-        ctx.arc(x, y, isHovered ? NODE_RADIUS + 1 : NODE_RADIUS, 0, Math.PI * 2)
-        ctx.fill()
-
-        ctx.fillStyle = isHovered ? accent : muted
-        ctx.globalAlpha = isHovered ? 1 : dim * 0.55 * (dimmed ? 0.5 : 1)
-        ctx.fillText(node.label, x, y + HALO_RADIUS + 3)
+        ctx.globalAlpha = node.t
+        ctx.fillText(node.label, labelX, labelY)
       }
       ctx.globalAlpha = 1
     }
 
     const step = (dt: number) => {
+      wanderClock += dt
+
       // El puntero se guarda en coordenadas de cliente y se traduce con un
       // rect fresco cada frame: el scroll mueve el canvas sin disparar
       // pointermove y dejaría hover/atracción anclados a un punto obsoleto.
@@ -323,67 +346,46 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
         pointerInCanvas = px >= 0 && px <= width && py >= 0 && py <= height
       }
 
-      // La malla de fondo solo deriva y rebota; sin interacción ni zona.
-      for (const point of meshPoints) {
-        point.x += point.vx * dt
-        point.y += point.vy * dt
-        if (point.x < MESH_MARGIN) {
-          point.x = MESH_MARGIN
-          point.vx = Math.abs(point.vx)
-        } else if (point.x > width - MESH_MARGIN) {
-          point.x = width - MESH_MARGIN
-          point.vx = -Math.abs(point.vx)
-        }
-        if (point.y < MESH_MARGIN) {
-          point.y = MESH_MARGIN
-          point.vy = Math.abs(point.vy)
-        } else if (point.y > height - MESH_MARGIN) {
-          point.y = height - MESH_MARGIN
-          point.vy = -Math.abs(point.vy)
-        }
-      }
-
       for (const node of nodes) {
+        // Deriva orgánica: aceleración suave con fase propia, sin tirones.
+        node.vx += Math.sin(wanderClock * 0.6 + node.phase) * WANDER * dt
+        node.vy += Math.cos(wanderClock * 0.7 + node.phase * 1.7) * WANDER * dt
+
+        // Guiado suave hacia adentro cerca de los bordes (sin rebote duro).
+        if (node.x < EDGE_STEER_ZONE) {
+          node.vx += EDGE_STEER * dt * (1 - node.x / EDGE_STEER_ZONE)
+        } else if (node.x > width - EDGE_STEER_ZONE) {
+          node.vx -= EDGE_STEER * dt * (1 - (width - node.x) / EDGE_STEER_ZONE)
+        }
+        if (node.y < EDGE_STEER_ZONE) {
+          node.vy += EDGE_STEER * dt * (1 - node.y / EDGE_STEER_ZONE)
+        } else if (node.y > height - EDGE_STEER_ZONE) {
+          node.vy -= EDGE_STEER * dt * (1 - (height - node.y) / EDGE_STEER_ZONE)
+        }
+
+        const speed = Math.hypot(node.vx, node.vy)
+        if (speed > MAX_SPEED) {
+          node.vx *= MAX_SPEED / speed
+          node.vy *= MAX_SPEED / speed
+        }
+
         node.x += node.vx * dt
         node.y += node.vy * dt
 
-        // Rebote suave en los bordes (respetando el margen de los labels).
-        if (node.x < MARGIN_X) {
-          node.x = MARGIN_X
-          node.vx = Math.abs(node.vx)
-        } else if (node.x > width - MARGIN_X) {
-          node.x = width - MARGIN_X
-          node.vx = -Math.abs(node.vx)
+        // Red de seguridad: rebote amortiguado en el margen mínimo.
+        if (node.x < EDGE_MARGIN) {
+          node.x = EDGE_MARGIN
+          node.vx = Math.abs(node.vx) * 0.5
+        } else if (node.x > width - EDGE_MARGIN) {
+          node.x = width - EDGE_MARGIN
+          node.vx = -Math.abs(node.vx) * 0.5
         }
-        if (node.y < MARGIN_TOP) {
-          node.y = MARGIN_TOP
-          node.vy = Math.abs(node.vy)
-        } else if (node.y > height - MARGIN_BOTTOM) {
-          node.y = height - MARGIN_BOTTOM
-          node.vy = -Math.abs(node.vy)
-        }
-
-        // Empuje suave fuera de la zona de exclusión del texto del hero.
-        if (zone && insideZone(zone, node.x, node.y)) {
-          const toLeft = node.x - zone.x0
-          const toRight = zone.x1 - node.x
-          const toTop = node.y - zone.y0
-          const toBottom = zone.y1 - node.y
-          const min = Math.min(toLeft, toRight, toTop, toBottom)
-          if (min === toRight) {
-            node.vx += EXCLUSION_PUSH * dt
-          } else if (min === toLeft) {
-            node.vx -= EXCLUSION_PUSH * dt
-          } else if (min === toTop) {
-            node.vy -= EXCLUSION_PUSH * dt
-          } else {
-            node.vy += EXCLUSION_PUSH * dt
-          }
-          const speed = Math.hypot(node.vx, node.vy)
-          if (speed > MAX_SPEED) {
-            node.vx *= MAX_SPEED / speed
-            node.vy *= MAX_SPEED / speed
-          }
+        if (node.y < EDGE_MARGIN) {
+          node.y = EDGE_MARGIN
+          node.vy = Math.abs(node.vy) * 0.5
+        } else if (node.y > height - EDGE_MARGIN) {
+          node.y = height - EDGE_MARGIN
+          node.vy = -Math.abs(node.vy) * 0.5
         }
 
         // Parallax sutil hacia el cursor.
@@ -404,18 +406,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
         node.oy += (targetOy - node.oy) * ease
       }
 
-      hoveredIndex = -1
-      if (pointerInCanvas) {
-        let best = HIT_RADIUS
-        for (let i = 0; i < nodes.length; i += 1) {
-          const node = nodes[i]
-          const distance = Math.hypot(px - (node.x + node.ox), py - (node.y + node.oy))
-          if (distance < best) {
-            best = distance
-            hoveredIndex = i
-          }
-        }
-      }
+      hoveredIndex = pointerInCanvas ? findNodeAt(px, py, HIT_RADIUS) : -1
       // Resaltado táctil temporal cuando no hay hover de ratón.
       if (touchIndex !== -1) {
         if (performance.now() < touchUntil && touchIndex < nodes.length) {
@@ -424,6 +415,16 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           }
         } else {
           touchIndex = -1
+        }
+      }
+
+      // Fade in/out del resaltado y del label.
+      for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i]
+        const target = i === hoveredIndex ? 1 : 0
+        node.t += (target - node.t) * Math.min(1, dt * LABEL_FADE_RATE)
+        if (target === 0 && node.t < 0.005) {
+          node.t = 0
         }
       }
     }
@@ -471,39 +472,26 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       canvas.width = Math.max(1, Math.round(width * dpr))
       canvas.height = Math.max(1, Math.round(height * dpr))
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      linkDistance = Math.min(200, Math.max(120, Math.hypot(width, height) * 0.14))
       zone = measureZone()
 
       const desktop = window.matchMedia(DESKTOP_QUERY).matches
-      const labels = desktop ? CONSTELLATION_NODES : CONSTELLATION_NODES_MOBILE
-      if (nodes.length !== labels.length) {
-        seedNodes(labels)
+      const density = desktop ? DENSITY_DESKTOP : DENSITY_MOBILE
+      const target = Math.round(clamp(MIN_NODES, MAX_NODES, width * height * density))
+      if (nodes.length === 0 || Math.abs(nodes.length - target) > target * RESEED_TOLERANCE) {
+        seedNodes(target)
       } else if (prevWidth > 0 && prevHeight > 0) {
         // Reacomodo proporcional, conservando la constelación existente.
         for (const node of nodes) {
-          node.x = Math.min(width - MARGIN_X, Math.max(MARGIN_X, (node.x * width) / prevWidth))
-          node.y = Math.min(
-            height - MARGIN_BOTTOM,
-            Math.max(MARGIN_TOP, (node.y * height) / prevHeight),
-          )
+          node.x = clamp(EDGE_MARGIN, width - EDGE_MARGIN, (node.x * width) / prevWidth)
+          node.y = clamp(EDGE_MARGIN, height - EDGE_MARGIN, (node.y * height) / prevHeight)
         }
       }
-
-      const meshCount = desktop ? MESH_COUNT_DESKTOP : MESH_COUNT_MOBILE
-      if (meshPoints.length !== meshCount) {
-        seedMesh(meshCount)
-      } else if (prevWidth > 0 && prevHeight > 0) {
-        for (const point of meshPoints) {
-          point.x = Math.min(
-            width - MESH_MARGIN,
-            Math.max(MESH_MARGIN, (point.x * width) / prevWidth),
-          )
-          point.y = Math.min(
-            height - MESH_MARGIN,
-            Math.max(MESH_MARGIN, (point.y * height) / prevHeight),
-          )
-        }
-      }
+      // Umbral de enlace ligado al espaciado medio real de la red.
+      linkDistance = clamp(
+        LINK_DISTANCE_MIN,
+        LINK_DISTANCE_MAX,
+        Math.sqrt((width * height) / Math.max(1, nodes.length)) * LINK_DISTANCE_FACTOR,
+      )
       if (!running) {
         draw()
       }
@@ -513,7 +501,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     updateRunning()
 
     // Re-mide y redibuja cuando la fuente mono termina de cargar (cambia las
-    // métricas del bloque de texto y el render estático de los labels).
+    // métricas del bloque de texto y de los labels).
     document.fonts?.ready.then(() => {
       if (!disposed) {
         applyResize()
@@ -545,7 +533,22 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     }
     schemeQuery.addEventListener('change', onSchemeChange)
 
-    // Interacción de cursor y pausas solo en modo animado.
+    // En modo estático (reduced-motion) el hover/tap sigue funcionando: no es
+    // animación. Se redibuja una sola vez por cambio, sin fade (t se fija).
+    const applyStaticHighlight = (found: number) => {
+      let changed = false
+      for (let i = 0; i < nodes.length; i += 1) {
+        const target = i === found ? 1 : 0
+        if (nodes[i].t !== target) {
+          nodes[i].t = target
+          changed = true
+        }
+      }
+      if (changed) {
+        draw()
+      }
+    }
+
     const onPointerMove = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') {
         return
@@ -553,37 +556,47 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       pointer.clientX = event.clientX
       pointer.clientY = event.clientY
       pointer.active = true
+      if (reducedMotion) {
+        const rect = canvas.getBoundingClientRect()
+        applyStaticHighlight(
+          findNodeAt(event.clientX - rect.left, event.clientY - rect.top, HIT_RADIUS),
+        )
+      }
     }
-    const onPointerLeave = () => {
+    const onPointerLeave = (event: PointerEvent) => {
       pointer.active = false
+      // Solo el ratón limpia el resaltado estático: en táctil el navegador
+      // dispara pointerleave justo tras pointerup y borraría el tap al instante.
+      if (reducedMotion && event.pointerType === 'mouse') {
+        applyStaticHighlight(-1)
+      }
     }
-    // Touch: un tap cerca de un nodo lo resalta temporalmente (el drift sigue).
+    // Touch: un tap cerca de un nodo lo resalta; en modo animado expira solo,
+    // en modo estático persiste hasta el siguiente tap.
     const onPointerDown = (event: PointerEvent) => {
       if (event.pointerType === 'mouse') {
         return
       }
       const rect = canvas.getBoundingClientRect()
-      const tapX = event.clientX - rect.left
-      const tapY = event.clientY - rect.top
-      let best = TOUCH_HIT_RADIUS
-      let found = -1
-      for (let i = 0; i < nodes.length; i += 1) {
-        const node = nodes[i]
-        const distance = Math.hypot(tapX - (node.x + node.ox), tapY - (node.y + node.oy))
-        if (distance < best) {
-          best = distance
-          found = i
-        }
-      }
+      const found = findNodeAt(
+        event.clientX - rect.left,
+        event.clientY - rect.top,
+        TOUCH_HIT_RADIUS,
+      )
       touchIndex = found
       touchUntil = found === -1 ? 0 : performance.now() + TOUCH_HIGHLIGHT_MS
+      if (reducedMotion) {
+        applyStaticHighlight(found)
+      }
     }
+    host.addEventListener('pointermove', onPointerMove)
+    host.addEventListener('pointerleave', onPointerLeave)
+    host.addEventListener('pointerdown', onPointerDown)
+
+    // Pausas del loop solo en modo animado.
     const onVisibilityChange = () => updateRunning()
     let intersectionObserver: IntersectionObserver | null = null
     if (!reducedMotion) {
-      host.addEventListener('pointermove', onPointerMove)
-      host.addEventListener('pointerleave', onPointerLeave)
-      host.addEventListener('pointerdown', onPointerDown)
       document.addEventListener('visibilitychange', onVisibilityChange)
       intersectionObserver = new IntersectionObserver((entries) => {
         inViewport = entries[0]?.isIntersecting ?? true
