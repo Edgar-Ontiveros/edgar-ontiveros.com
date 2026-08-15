@@ -25,3 +25,6 @@ dist-ssr
 
 # Claude Code (config personal local)
 .claude/settings.local.json
+
+# Material fuente local (no versionado: contiene originales sin sanear)
+raw-assets/

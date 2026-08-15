@@ -28,9 +28,12 @@ sección.
   tema e idioma antes del primer paint — mantenerlo en sincronía con los hooks.
 - `src/components/` — componentes reutilizables; `src/sections/` — secciones
   del one-page.
-- `raw-assets/` — insumos originales (fotos, CV, posters, screenshots); el
-  build generará versiones optimizadas en `public/`. No publicar originales
-  directamente.
+- `raw-assets/` — material fuente LOCAL, **no versionado** (está en
+  `.gitignore`): contiene originales sin sanear (capturas con datos de
+  negocio, PDFs de pósters con correos personales). Los scripts de `scripts/`
+  lo consumen para regenerar los assets optimizados y saneados de `public/`,
+  que son los únicos que se versionan y publican. Nunca commitear nada de
+  `raw-assets/` ni publicar originales directamente.
 
 ## Convenciones
 
