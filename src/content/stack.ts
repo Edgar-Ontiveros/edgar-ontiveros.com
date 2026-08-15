@@ -47,7 +47,7 @@ export const STACK_CATEGORIES: StackCategory[] = [
   },
   {
     id: 'cloud',
-    technologies: ['Docker', 'AWS EC2/EBS', 'GitHub Actions', 'nginx', 'Linux'],
+    technologies: ['Docker', 'Kubernetes', 'AWS EC2/EBS', 'GitHub Actions', 'nginx', 'Linux'],
   },
   {
     id: 'ml',

@@ -1,0 +1,61 @@
+import type { SimpleIcon } from 'simple-icons'
+import {
+  siDjango,
+  siDocker,
+  siFastapi,
+  siGit,
+  siGithubactions,
+  siKubernetes,
+  siLinux,
+  siNginx,
+  siNumpy,
+  siPandas,
+  siPostgresql,
+  siPydantic,
+  siPytest,
+  siPython,
+  siReact,
+  siRuff,
+  siSap,
+  siScikitlearn,
+  siSqlalchemy,
+  siSqlite,
+  siStreamlit,
+  siSupabase,
+  siTensorflow,
+  siTypescript,
+  siVite,
+} from 'simple-icons'
+
+/**
+ * Imports por icono individual: solo entran al bundle los usados. Cada icono
+ * expone `path` (el glifo) y `hex` (el color de marca, dato del paquete);
+ * el contraste contra el tema se ajusta con src/lib/brandColor.ts.
+ */
+export const BRAND_ICONS: Record<string, SimpleIcon> = {
+  Python: siPython,
+  FastAPI: siFastapi,
+  Pydantic: siPydantic,
+  SQLAlchemy: siSqlalchemy,
+  Django: siDjango,
+  PostgreSQL: siPostgresql,
+  SQLite: siSqlite,
+  Supabase: siSupabase,
+  Docker: siDocker,
+  Kubernetes: siKubernetes,
+  'GitHub Actions': siGithubactions,
+  nginx: siNginx,
+  Linux: siLinux,
+  'scikit-learn': siScikitlearn,
+  'TensorFlow/Keras': siTensorflow,
+  Pandas: siPandas,
+  NumPy: siNumpy,
+  React: siReact,
+  TypeScript: siTypescript,
+  Vite: siVite,
+  Streamlit: siStreamlit,
+  pytest: siPytest,
+  ruff: siRuff,
+  Git: siGit,
+  SAP: siSap,
+}

@@ -22,7 +22,7 @@ function App() {
       <main id="content" tabIndex={-1} className="outline-none">
         <Hero content={content} />
         <About content={content} />
-        <Stack content={content} />
+        <Stack content={content} theme={theme} />
         {/* Secciones aún vacías: existen para que las anclas de la nav no queden rotas.
             tabIndex -1: al navegar a un ancla el foco aterriza en la sección. */}
         <section id="experience" tabIndex={-1} className="scroll-mt-16 outline-none" />
