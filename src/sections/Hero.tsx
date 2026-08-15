@@ -119,11 +119,12 @@ export function Hero({ content }: HeroProps) {
         </div>
       </div>
 
-      {/* Las tecnologías de la constelación como texto accesible (tras el
-          contenido principal): el canvas es decorativo (aria-hidden) y no puede
-          ser la única fuente de esa información. role="list" explícito porque
-          el preflight pone list-style:none y Safari/VoiceOver quitaría el rol. */}
-      <ul role="list" aria-label={hero.stackLabel} className="sr-only">
+      {/* El canvas es decorativo (aria-hidden), pero revela en hover/tap un
+          vocabulario MÁS AMPLIO que la sección #stack (fuente curada con
+          niveles): esta lista sr-only mantiene la paridad textual de ese
+          superconjunto. role="list" explícito porque el preflight pone
+          list-style:none y Safari/VoiceOver quitaría el rol. */}
+      <ul role="list" aria-label={hero.constellationLabel} className="sr-only">
         {CONSTELLATION_TECHNOLOGIES.map((tech) => (
           <li key={tech}>{tech}</li>
         ))}

@@ -1,3 +1,5 @@
+import type { StackCategoryId, StackLevel } from './stack'
+
 /** Idiomas soportados por el sitio. */
 export type Language = 'en' | 'es'
 
@@ -31,14 +33,20 @@ export interface SiteContent {
     /** Texto de la línea typewriter. */
     tagline: string
     valueProp: string
-    /** Nombre accesible de la lista de tecnologías de la constelación. */
-    stackLabel: string
+    /** Nombre accesible de la lista sr-only con el vocabulario de la constelación. */
+    constellationLabel: string
     ctaContact: string
     ctaDownloadCv: string
     githubLabel: string
     linkedinLabel: string
     whatsappLabel: string
     emailLabel: string
+  }
+  stack: {
+    /** Nombre accesible de la leyenda de niveles de uso. */
+    legendLabel: string
+    levels: Record<StackLevel, string>
+    categories: Record<StackCategoryId, string>
   }
   about: {
     paragraphs: string[]

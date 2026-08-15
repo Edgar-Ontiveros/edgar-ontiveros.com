@@ -19,13 +19,30 @@ export const en: SiteContent = {
     tagline: 'Machine Learning Engineer / Developer',
     valueProp:
       'I take systems from idea to production — the API, the data model, the interface, and the deploy.',
-    stackLabel: 'Tech stack',
+    constellationLabel: 'Technologies in the constellation',
     ctaContact: 'Get in touch',
     ctaDownloadCv: 'Download CV',
     githubLabel: 'Edgar Ontiveros on GitHub',
     linkedinLabel: 'Edgar Ontiveros on LinkedIn',
     whatsappLabel: 'Edgar Ontiveros on WhatsApp',
     emailLabel: 'Email Edgar Ontiveros',
+  },
+  stack: {
+    legendLabel: 'Usage level',
+    levels: {
+      daily: 'daily',
+      solid: 'solid',
+      learning: 'learning',
+    },
+    categories: {
+      backend: 'Backend & APIs',
+      databases: 'Databases',
+      cloud: 'Cloud & DevOps',
+      ml: 'Machine Learning & Data',
+      frontend: 'Frontend',
+      quality: 'Testing & Quality',
+      bi: 'BI & ERP',
+    },
   },
   about: {
     paragraphs: [
