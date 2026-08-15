@@ -79,6 +79,11 @@ export const es: SiteContent = {
           'Lideré un proyecto de automatización de torque eléctrico que reemplazó una operación manual de apriete — trazabilidad digitalizada y menos defectos de torque.',
         ],
         technologies: ['Python', 'Industrial automation', 'Data monitoring'],
+        photo: {
+          alt: 'Estación de torque eléctrico en la línea de producción: atornillador automatizado, controlador de torque y señalización de la estación',
+          caption: 'Estación de automatización de torque eléctrico — Safran Aerosystems',
+          buttonLabel: 'Ver foto de la estación de torque eléctrico',
+        },
       },
       {
         id: 'safran-intern',
@@ -104,13 +109,7 @@ export const es: SiteContent = {
     ],
     certificationsTitle: 'Certificaciones',
     opensPdf: 'abre el PDF en una pestaña nueva',
-    gallery: {
-      close: 'Cerrar visor',
-      previous: 'Certificado anterior',
-      next: 'Certificado siguiente',
-      viewPdf: 'Ver PDF',
-      of: 'de',
-    },
+    viewPdf: 'Ver PDF',
   },
   contact: {
     blurb:
@@ -131,6 +130,12 @@ export const es: SiteContent = {
     menu: {
       open: 'Abrir menú',
       close: 'Cerrar menú',
+    },
+    lightbox: {
+      close: 'Cerrar visor',
+      previous: 'Anterior',
+      next: 'Siguiente',
+      of: 'de',
     },
     skipToContent: 'Saltar al contenido',
   },

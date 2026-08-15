@@ -78,6 +78,11 @@ export const en: SiteContent = {
           'Led an electric-torque automation project that replaced a manual tightening operation — digitized traceability and reduced torque-related defects.',
         ],
         technologies: ['Python', 'Industrial automation', 'Data monitoring'],
+        photo: {
+          alt: 'Electric-torque station on the production line: automated screwdriver, torque controller and station signage',
+          caption: 'Electric-torque automation station — Safran Aerosystems',
+          buttonLabel: 'View photo of the electric-torque station',
+        },
       },
       {
         id: 'safran-intern',
@@ -103,13 +108,7 @@ export const en: SiteContent = {
     ],
     certificationsTitle: 'Certifications',
     opensPdf: 'opens PDF in a new tab',
-    gallery: {
-      close: 'Close viewer',
-      previous: 'Previous certificate',
-      next: 'Next certificate',
-      viewPdf: 'View PDF',
-      of: 'of',
-    },
+    viewPdf: 'View PDF',
   },
   contact: {
     blurb:
@@ -130,6 +129,12 @@ export const en: SiteContent = {
     menu: {
       open: 'Open menu',
       close: 'Close menu',
+    },
+    lightbox: {
+      close: 'Close viewer',
+      previous: 'Previous',
+      next: 'Next',
+      of: 'of',
     },
     skipToContent: 'Skip to content',
   },

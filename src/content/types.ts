@@ -67,6 +67,12 @@ export interface SiteContent {
       bullets: string[]
       /** Tags de tecnología del doc; se omiten si el doc no los da. */
       technologies?: string[]
+      /** Foto de proyecto opcional (los assets viven en site.rolePhotos). */
+      photo?: {
+        alt: string
+        caption: string
+        buttonLabel: string
+      }
     }[]
   }
   education: {
@@ -82,15 +88,8 @@ export interface SiteContent {
     certificationsTitle: string
     /** Aviso accesible en el enlace al PDF original. */
     opensPdf: string
-    /** Textos del visor de certificados (lightbox). */
-    gallery: {
-      close: string
-      previous: string
-      next: string
-      viewPdf: string
-      /** Conector del anuncio de posición ("3 de 9" / "3 of 9"). */
-      of: string
-    }
+    /** Label del enlace al PDF original dentro del visor. */
+    viewPdf: string
   }
   contact: {
     blurb: string
@@ -113,6 +112,14 @@ export interface SiteContent {
     menu: {
       open: string
       close: string
+    }
+    /** Textos del visor genérico (certificados, fotos de proyecto). */
+    lightbox: {
+      close: string
+      previous: string
+      next: string
+      /** Conector del anuncio de posición ("3 de 9" / "3 of 9"). */
+      of: string
     }
     skipToContent: string
   }

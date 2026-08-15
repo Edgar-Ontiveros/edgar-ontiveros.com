@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { CertificateLightbox } from '../components/CertificateLightbox'
+import { Lightbox } from '../components/Lightbox'
+import type { LightboxItem } from '../components/Lightbox'
 import { Section, revealStaggerClasses } from '../components/Section'
 import { Timeline, TimelineItem } from '../components/Timeline'
 import { CERTIFICATIONS } from '../content/certifications'
@@ -104,9 +105,23 @@ export function Education({ content }: EducationProps) {
       </ul>
 
       {viewerIndex !== null && (
-        <CertificateLightbox
+        <Lightbox
+          items={CERTIFICATIONS.map((cert): LightboxItem => ({
+            src: cert.preview.large,
+            width: cert.preview.largeWidth,
+            height: cert.preview.largeHeight,
+            alt: `${cert.title} — ${cert.issuer}`,
+            title: cert.title,
+            titleLang: 'es',
+            subtitle: `${cert.issuer} · ${cert.year}`,
+            link: {
+              href: `/certificaciones/${cert.file}`,
+              label: education.viewPdf,
+              srHint: education.opensPdf,
+            },
+          }))}
           index={viewerIndex}
-          content={content}
+          labels={content.ui.lightbox}
           onNavigate={setViewerIndex}
           onClose={closeViewer}
         />

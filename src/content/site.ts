@@ -15,4 +15,26 @@ export const site = {
   orgLogos: {
     uach: '/logos/uach-ingenieria.webp',
   } as Record<string, string>,
+  /** Fotos de proyecto por id de puesto (experience.roles). El asset publicado
+      lleva el crop del doc: excluye a la persona del fondo del original. */
+  rolePhotos: {
+    'safran-manufacturing': {
+      thumb: '/images/safran-torque-thumb.webp',
+      thumbWidth: 600,
+      thumbHeight: 400,
+      large: '/images/safran-torque-large.webp',
+      largeWidth: 1080,
+      largeHeight: 720,
+    },
+  } as Record<
+    string,
+    {
+      thumb: string
+      thumbWidth: number
+      thumbHeight: number
+      large: string
+      largeWidth: number
+      largeHeight: number
+    }
+  >,
 } as const

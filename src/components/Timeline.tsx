@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, Ref } from 'react'
 import { CONCEPT_GLYPHS } from './techGlyphs'
 import { DEVICON_ICONS } from '../lib/deviconIcons'
 import { BRAND_ICONS } from '../lib/techIcons'
@@ -41,6 +41,20 @@ interface TimelineItemProps {
   children?: ReactNode
   /** Tecnologías del puesto, como chips discretos al pie. */
   technologies?: string[]
+  /** Foto de proyecto opcional: miniatura discreta que abre un visor. */
+  media?: {
+    thumb: string
+    thumbWidth: number
+    thumbHeight: number
+    alt: string
+    caption: string
+    buttonLabel: string
+    onOpen: () => void
+  }
+  /** Ref del botón de la foto, para que el padre restaure el foco al cerrar
+      el visor. Vive fuera de `media`: un miembro pasado a ref= haría que la
+      regla react-hooks/refs tratara todo el objeto como contenedor de refs. */
+  mediaButtonRef?: Ref<HTMLButtonElement>
 }
 
 export function TimelineItem({
@@ -53,6 +67,8 @@ export function TimelineItem({
   period,
   children,
   technologies,
+  media,
+  mediaButtonRef,
 }: TimelineItemProps) {
   return (
     <li className="relative pb-8 pl-5 last:pb-2 sm:pl-8">
@@ -92,6 +108,34 @@ export function TimelineItem({
         </div>
 
         {children}
+
+        {media && (
+          <figure className="mt-5">
+            <button
+              type="button"
+              ref={mediaButtonRef}
+              onClick={media.onOpen}
+              aria-label={media.buttonLabel}
+              aria-haspopup="dialog"
+              className="block w-44 overflow-hidden rounded-md border border-border transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:w-48"
+            >
+              {/* alt vacío: el aria-label del botón ya nombra la acción y el
+                  alt descriptivo vive en la imagen del visor (misma convención
+                  que las tarjetas de certificado). */}
+              <img
+                src={media.thumb}
+                alt=""
+                width={media.thumbWidth}
+                height={media.thumbHeight}
+                loading="lazy"
+                className="aspect-3/2 w-full object-cover"
+              />
+            </button>
+            <figcaption className="mt-2 max-w-xs font-mono text-xs text-muted">
+              {media.caption}
+            </figcaption>
+          </figure>
+        )}
 
         {technologies && technologies.length > 0 && (
           <ul role="list" className="mt-5 flex flex-wrap gap-2">
