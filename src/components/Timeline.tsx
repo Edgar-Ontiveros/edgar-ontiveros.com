@@ -1,7 +1,5 @@
 import type { ReactNode, Ref } from 'react'
-import { CONCEPT_GLYPHS } from './techGlyphs'
-import { DEVICON_ICONS } from '../lib/deviconIcons'
-import { BRAND_ICONS } from '../lib/techIcons'
+import { showsChipIcon } from '../lib/chipIcon'
 import { revealStaggerClasses } from './Section'
 import { TechIcon } from './TechIcon'
 
@@ -12,17 +10,6 @@ export function Timeline({ children }: { children: ReactNode }) {
       {children}
     </ol>
   )
-}
-
-/** ¿La tecnología muestra icono en un chip mini? Los conceptos sin icono y
-    los wordmarks (ilegibles a 14px) van como chip de texto; el monograma de
-    TechIcon es solo red de seguridad. */
-const showsChipIcon = (name: string) => {
-  if (BRAND_ICONS[name] || CONCEPT_GLYPHS[name]) {
-    return true
-  }
-  const devicon = DEVICON_ICONS[name]
-  return Boolean(devicon && !devicon.wordmark)
 }
 
 interface TimelineItemProps {

@@ -1,3 +1,4 @@
+import type { ProjectId } from './projects'
 import type { StackCategoryId } from './stack'
 
 /** Idiomas soportados por el sitio. */
@@ -74,6 +75,31 @@ export interface SiteContent {
         buttonLabel: string
       }
     }[]
+  }
+  projects: {
+    /** Subtítulo de la sección, bajo el encabezado. */
+    subtitle: string
+    /** Etiqueta de los proyectos sin demo/repo públicos. */
+    internalTag: string
+    /** Prefijo del nombre accesible del botón de capturas ("Ver capturas"). */
+    viewScreenshots: string
+    /** Textos por proyecto (los datos sin idioma viven en projects.ts). */
+    items: Record<
+      ProjectId,
+      {
+        name: string
+        /** Problema → solución, escaneable en segundos. */
+        description: string
+        /** Línea secundaria de ingeniería, del doc. */
+        detail: string
+        /** Una entrada por captura, en el orden de projects.ts. */
+        screenshots: {
+          alt: string
+          /** Pie visible en el visor (qué vista es). */
+          caption: string
+        }[]
+      }
+    >
   }
   education: {
     /** Entradas de la línea de tiempo académica, de más reciente a más antigua. */

@@ -96,6 +96,71 @@ export const en: SiteContent = {
       },
     ],
   },
+  projects: {
+    subtitle: 'Systems currently running in production.',
+    internalTag: 'Internal project',
+    viewScreenshots: 'View screenshots',
+    items: {
+      quotes: {
+        name: 'Quotation Management System',
+        description:
+          'Internal platform for 11 branches: quote requests, business-hours SLA tracking across time zones, and quoted vs. confirmed revenue by branch, buyer, rep and client.',
+        detail:
+          'Alembic migrations, background scheduler, pytest against real PostgreSQL, gated CI/CD deploys.',
+        screenshots: [
+          {
+            alt: 'Quotation system dashboard with SLA, conversion and revenue indicators plus weekly trend charts',
+            caption: 'Management dashboard',
+          },
+          {
+            alt: 'Quote request list with folio, status, SLA band, priority and amount per request',
+            caption: 'Quote request tracking',
+          },
+          {
+            alt: 'Sign-in screen of the quotation system',
+            caption: 'Sign in',
+          },
+        ],
+      },
+      pricing: {
+        name: 'Automated Pricing Engine',
+        description:
+          'Turns SAP master data into branch price lists, cost sheets and variance reports under supplier-priority rules with fail-closed validation.',
+        detail:
+          'Migrated from Streamlit to FastAPI + React, keeping the original as a parity test.',
+        screenshots: [
+          {
+            alt: 'Pricing engine upload step: SAP master file and branch templates, with the four-stage process indicator',
+            caption: 'File upload and validation',
+          },
+        ],
+      },
+      codegen: {
+        name: 'SAP Article Code Generator',
+        description:
+          'Infers SAP code, product hierarchy, unit of measure and weight for new items from the most similar historical records.',
+        detail: 'Multi-stage Docker build on EC2 with persistent EBS storage.',
+        screenshots: [
+          {
+            alt: 'Code generator with a free-text item description, the inferred SAP code at 100% confidence and the fields ready for SAP',
+            caption: 'Code generation from a description',
+          },
+        ],
+      },
+      'purchase-orders': {
+        name: 'Purchase Order Processor',
+        description:
+          'Parses CFDI XML invoices and PDF proformas into SAP-ready Excel: unit conversion, line-item grouping, supplier-parser Protocol.',
+        detail: 'Strict mypy and 97 tests.',
+        screenshots: [
+          {
+            alt: 'Purchase order processor with uploaded invoice files and the resulting order grouped by gauge, pieces and pallets',
+            caption: 'Invoice processing to SAP-ready output',
+          },
+        ],
+      },
+    },
+  },
   education: {
     entries: [
       {

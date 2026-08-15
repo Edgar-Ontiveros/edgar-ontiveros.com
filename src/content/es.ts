@@ -97,6 +97,71 @@ export const es: SiteContent = {
       },
     ],
   },
+  projects: {
+    subtitle: 'Sistemas corriendo en producción hoy.',
+    internalTag: 'Proyecto interno',
+    viewScreenshots: 'Ver capturas',
+    items: {
+      quotes: {
+        name: 'Sistema de Gestión de Cotizaciones',
+        description:
+          'Plataforma interna para 11 sucursales: solicitudes de cotización, seguimiento de SLA en horario hábil entre zonas horarias, e ingreso cotizado vs. confirmado por sucursal, comprador, vendedor y cliente.',
+        detail:
+          'Migraciones con Alembic, scheduler en segundo plano, pytest contra PostgreSQL real y deploys condicionados por CI/CD.',
+        screenshots: [
+          {
+            alt: 'Dashboard del sistema de cotizaciones con indicadores de SLA, conversión e ingreso, y gráficas de tendencia semanal',
+            caption: 'Dashboard de gestión',
+          },
+          {
+            alt: 'Lista de solicitudes de cotización con folio, estado, banda de SLA, prioridad y monto por solicitud',
+            caption: 'Seguimiento de solicitudes',
+          },
+          {
+            alt: 'Pantalla de inicio de sesión del sistema de cotizaciones',
+            caption: 'Inicio de sesión',
+          },
+        ],
+      },
+      pricing: {
+        name: 'Motor Automático de Precios',
+        description:
+          'Convierte el maestro de SAP en listas de precios por sucursal, respaldos de costos y reportes de variaciones, con reglas de prioridad de proveedor y validación fail-closed.',
+        detail:
+          'Migrado de Streamlit a FastAPI + React, conservando el original como prueba de paridad.',
+        screenshots: [
+          {
+            alt: 'Paso de carga del motor de precios: archivo maestro SAP y plantillas por sucursal, con el indicador de proceso en cuatro etapas',
+            caption: 'Carga y validación de archivos',
+          },
+        ],
+      },
+      codegen: {
+        name: 'Generador de Códigos de Artículo SAP',
+        description:
+          'Infere código SAP, jerarquía de producto, unidad de medida y peso de artículos nuevos a partir de los registros históricos más similares.',
+        detail: 'Build de Docker multi-etapa en EC2 con almacenamiento persistente en EBS.',
+        screenshots: [
+          {
+            alt: 'Generador de códigos con la descripción libre de un artículo, el código SAP inferido con 100% de confianza y los campos listos para el alta en SAP',
+            caption: 'Generación de código desde una descripción',
+          },
+        ],
+      },
+      'purchase-orders': {
+        name: 'Procesador de Órdenes de Compra',
+        description:
+          'Convierte facturas CFDI en XML y proformas en PDF en Excel listo para SAP: conversión de unidades, agrupado de partidas y Protocol de parsers por proveedor.',
+        detail: 'mypy estricto y 97 tests.',
+        screenshots: [
+          {
+            alt: 'Procesador de órdenes de compra con los archivos de factura cargados y la orden resultante agrupada por calibre, piezas y tarimas',
+            caption: 'Procesamiento de factura a formato SAP',
+          },
+        ],
+      },
+    },
+  },
   education: {
     entries: [
       {
