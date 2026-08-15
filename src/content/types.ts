@@ -84,6 +84,10 @@ export interface SiteContent {
     internalTag: string
     /** Prefijo del nombre accesible del botón de capturas ("Ver capturas"). */
     viewScreenshots: string
+    /** Prefijo del nombre accesible del enlace al repositorio (se compone con
+        el nombre del proyecto: cuatro enlaces "GitHub" a secas serían
+        idénticos para un lector de pantalla). */
+    viewRepo: string
     /** Textos por proyecto (los datos sin idioma viven en projects.ts). */
     items: Record<
       ProjectId,

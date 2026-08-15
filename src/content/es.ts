@@ -101,6 +101,7 @@ export const es: SiteContent = {
     subtitle: 'Sistemas corriendo en producción hoy.',
     internalTag: 'Proyecto interno',
     viewScreenshots: 'Ver capturas',
+    viewRepo: 'Ver repositorio en GitHub',
     items: {
       quotes: {
         name: 'Sistema de Gestión de Cotizaciones',

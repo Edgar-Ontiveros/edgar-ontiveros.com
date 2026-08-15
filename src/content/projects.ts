@@ -7,9 +7,10 @@
  * (sanea datos sensibles de las capturas y produce los dos tamaños WebP;
  * las dimensiones de abajo salen de lo que imprime ese script).
  *
- * Todos los proyectos actuales son herramientas internas de Herinox: no hay
- * demo ni repositorio públicos, así que no llevan enlaces (la tarjeta muestra
- * la etiqueta "Proyecto interno" en su lugar).
+ * Todos los proyectos son herramientas internas de Herinox (sin demo
+ * pública), pero su código vive en repositorios públicos de GitHub (`repo`,
+ * URLs verificadas con respuesta 200). La etiqueta "Proyecto interno" solo se
+ * muestra en tarjetas que no tengan ningún enlace.
  */
 export const PROJECT_IDS = ['quotes', 'pricing', 'codegen', 'purchase-orders'] as const
 
@@ -30,7 +31,10 @@ export interface Project {
   technologies: string[]
   /** Capturas en el orden en que navega el visor; la primera es la miniatura. */
   screenshots: ProjectScreenshot[]
-  /** Sin demo/repo público: la tarjeta muestra la etiqueta de proyecto interno. */
+  /** Repositorio público en GitHub. */
+  repo?: string
+  /** Herramienta interna: sin `repo` ni demo, la tarjeta muestra la etiqueta
+      de proyecto interno en lugar de enlaces. */
   internal: boolean
 }
 
@@ -57,24 +61,28 @@ export const PROJECTS: Project[] = [
       screenshot('quotes-requests'),
       screenshot('quotes-login'),
     ],
+    repo: 'https://github.com/Edgar-Ontiveros/proyecto-cotizaciones',
     internal: true,
   },
   {
     id: 'pricing',
     technologies: ['FastAPI', 'React', 'Pandas', 'Docker'],
     screenshots: [screenshot('pricing')],
+    repo: 'https://github.com/Edgar-Ontiveros/auto-precios',
     internal: true,
   },
   {
     id: 'codegen',
     technologies: ['FastAPI', 'scikit-learn', 'RapidFuzz', 'AWS EC2/EBS'],
     screenshots: [screenshot('codegen')],
+    repo: 'https://github.com/Edgar-Ontiveros/Generador-de-Codigos',
     internal: true,
   },
   {
     id: 'purchase-orders',
     technologies: ['FastAPI', 'Pydantic', 'lxml', 'pdfplumber'],
     screenshots: [screenshot('purchase-orders')],
+    repo: 'https://github.com/Edgar-Ontiveros/Ordenes-Compra',
     internal: true,
   },
 ]

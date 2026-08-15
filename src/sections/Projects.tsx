@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Lightbox } from '../components/Lightbox'
 import type { LightboxItem } from '../components/Lightbox'
+import { GitHubIcon } from '../components/icons'
 import { Section, revealStaggerClasses } from '../components/Section'
 import { TechIcon } from '../components/TechIcon'
 import { showsChipIcon } from '../lib/chipIcon'
@@ -82,7 +83,9 @@ export function Projects({ content }: ProjectsProps) {
                 <div className="flex flex-1 flex-col p-5 sm:p-6">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                     <h3 className="font-display text-lg font-semibold">{texts.name}</h3>
-                    {project.internal && (
+                    {/* La etiqueta solo aparece cuando NO hay ningún enlace
+                        que la sustituya. */}
+                    {project.internal && !project.repo && (
                       <span className="rounded-full border border-border bg-background px-2.5 py-0.5 font-mono text-xs whitespace-nowrap text-muted">
                         {projects.internalTag}
                       </span>
@@ -107,6 +110,20 @@ export function Projects({ content }: ProjectsProps) {
                       </li>
                     ))}
                   </ul>
+                  {project.repo && (
+                    <div className="mt-5">
+                      <a
+                        href={project.repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${projects.viewRepo}: ${texts.name}`}
+                        className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent motion-reduce:transition-none"
+                      >
+                        <GitHubIcon className="h-5 w-5" />
+                        GitHub
+                      </a>
+                    </div>
+                  )}
                 </div>
               </article>
             </li>

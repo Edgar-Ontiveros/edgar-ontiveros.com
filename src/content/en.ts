@@ -100,6 +100,7 @@ export const en: SiteContent = {
     subtitle: 'Systems currently running in production.',
     internalTag: 'Internal project',
     viewScreenshots: 'View screenshots',
+    viewRepo: 'View repository on GitHub',
     items: {
       quotes: {
         name: 'Quotation Management System',
