@@ -5,6 +5,7 @@ import { STACK_CATEGORIES } from '../content/stack'
 import type { SiteContent } from '../content/types'
 import type { Theme } from '../hooks/useTheme'
 import { ensureContrast } from '../lib/brandColor'
+import { DEVICON_ICONS } from '../lib/deviconIcons'
 import { BRAND_ICONS } from '../lib/techIcons'
 
 interface StackProps {
@@ -34,9 +35,9 @@ export function Stack({ content, theme }: StackProps) {
     const colors: Record<string, string> = {}
     for (const category of STACK_CATEGORIES) {
       for (const tech of category.technologies) {
-        const icon = BRAND_ICONS[tech]
-        if (icon) {
-          colors[tech] = ensureContrast(`#${icon.hex}`, surfaceColor)
+        const hex = BRAND_ICONS[tech]?.hex ?? DEVICON_ICONS[tech]?.hex
+        if (hex) {
+          colors[tech] = ensureContrast(`#${hex}`, surfaceColor)
         }
       }
     }

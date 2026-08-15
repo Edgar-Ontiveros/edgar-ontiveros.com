@@ -17,6 +17,7 @@ export const CONSTELLATION_TECHNOLOGIES = [
   'REST API',
   'Uvicorn',
   'SQLModel',
+  'Node.js',
   // Datos
   'PostgreSQL',
   'SQL',
@@ -46,6 +47,7 @@ export const CONSTELLATION_TECHNOLOGIES = [
   // Frontend
   'React',
   'TypeScript',
+  'JavaScript',
   'Vite',
   'Tailwind CSS',
   'Streamlit',

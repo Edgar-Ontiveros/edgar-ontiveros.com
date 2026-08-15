@@ -21,25 +21,17 @@ export interface StackCategory {
 }
 
 /**
- * Monogramas para tecnologías sin logo en simple-icons (restricciones de
- * marca: AWS, Power BI; sin logo registrado: Alembic, mypy) y conceptos que no
- * son productos. Texto visible: vive aquí, en la capa de contenido (no se
- * traduce, como los nombres de tecnología).
+ * Monogramas de red de seguridad para tecnologías futuras sin logo (todas las
+ * actuales se resuelven con simple-icons, Devicon o glifos propios). Texto
+ * visible: vive aquí, en la capa de contenido (no se traduce, como los
+ * nombres de tecnología).
  */
-export const TECH_MONOGRAMS: Record<string, string> = {
-  'REST APIs': 'API',
-  SQL: 'SQL',
-  Alembic: 'AL',
-  'AWS EC2/EBS': 'AWS',
-  Forecasting: 'FC',
-  mypy: 'my',
-  'Power BI': 'BI',
-}
+export const TECH_MONOGRAMS: Record<string, string> = {}
 
 export const STACK_CATEGORIES: StackCategory[] = [
   {
     id: 'backend',
-    technologies: ['Python', 'FastAPI', 'Pydantic', 'SQLAlchemy', 'Django', 'REST APIs'],
+    technologies: ['Python', 'FastAPI', 'Pydantic', 'SQLAlchemy', 'Django', 'Node.js', 'REST APIs'],
   },
   {
     id: 'databases',
@@ -55,7 +47,7 @@ export const STACK_CATEGORIES: StackCategory[] = [
   },
   {
     id: 'frontend',
-    technologies: ['React', 'TypeScript', 'Vite', 'Streamlit'],
+    technologies: ['React', 'TypeScript', 'JavaScript', 'Vite', 'Streamlit'],
   },
   {
     id: 'quality',
