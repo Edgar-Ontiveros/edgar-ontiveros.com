@@ -51,6 +51,14 @@ export const es: SiteContent = {
       { value: '11', label: 'sucursales atendidas' },
     ],
   },
+  education: {
+    degree: 'Licenciatura en Ingeniería Física',
+    institution: 'Universidad Autónoma de Chihuahua',
+    period: '2019–2024',
+    detail: 'Vicepresidente del Consejo Estudiantil',
+    certificationsTitle: 'Certificaciones',
+    opensPdf: 'abre el PDF en una pestaña nueva',
+  },
   contact: {
     blurb:
       'Abierto a oportunidades — si estás construyendo algo donde el machine learning se encuentra con producción, hablemos.',

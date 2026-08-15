@@ -51,6 +51,14 @@ export const en: SiteContent = {
       { value: '11', label: 'branches served' },
     ],
   },
+  education: {
+    degree: 'B.Sc. in Physics Engineering',
+    institution: 'Autonomous University of Chihuahua',
+    period: '2019–2024',
+    detail: 'Vice President, Student Council',
+    certificationsTitle: 'Certifications',
+    opensPdf: 'opens PDF in a new tab',
+  },
   contact: {
     blurb:
       "Open to opportunities — if you're building something where machine learning meets production, let's talk.",

@@ -53,6 +53,15 @@ export interface SiteContent {
       label: string
     }[]
   }
+  education: {
+    degree: string
+    institution: string
+    period: string
+    detail: string
+    certificationsTitle: string
+    /** Aviso accesible en cada enlace de certificado. */
+    opensPdf: string
+  }
   contact: {
     blurb: string
     /** Labels visibles de los botones (nombres de marca, no se traducen). */
