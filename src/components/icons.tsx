@@ -48,6 +48,22 @@ export function CloseIcon({ className }: IconProps) {
   )
 }
 
+export function ChevronLeftIcon({ className }: IconProps) {
+  return (
+    <svg {...strokeProps(className)}>
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  )
+}
+
+export function ChevronRightIcon({ className }: IconProps) {
+  return (
+    <svg {...strokeProps(className)}>
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  )
+}
+
 export function ChevronDownIcon({ className }: IconProps) {
   return (
     <svg {...strokeProps(className)}>

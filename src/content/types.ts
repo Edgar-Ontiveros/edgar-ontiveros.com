@@ -64,8 +64,17 @@ export interface SiteContent {
       period: string
     }[]
     certificationsTitle: string
-    /** Aviso accesible en cada enlace de certificado. */
+    /** Aviso accesible en el enlace al PDF original. */
     opensPdf: string
+    /** Textos del visor de certificados (lightbox). */
+    gallery: {
+      close: string
+      previous: string
+      next: string
+      viewPdf: string
+      /** Conector del anuncio de posición ("3 de 9" / "3 of 9"). */
+      of: string
+    }
   }
   contact: {
     blurb: string

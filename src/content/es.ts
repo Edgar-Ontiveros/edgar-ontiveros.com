@@ -63,6 +63,13 @@ export const es: SiteContent = {
     ],
     certificationsTitle: 'Certificaciones',
     opensPdf: 'abre el PDF en una pestaña nueva',
+    gallery: {
+      close: 'Cerrar visor',
+      previous: 'Certificado anterior',
+      next: 'Certificado siguiente',
+      viewPdf: 'Ver PDF',
+      of: 'de',
+    },
   },
   contact: {
     blurb:
