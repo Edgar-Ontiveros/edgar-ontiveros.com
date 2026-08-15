@@ -1,0 +1,121 @@
+<!doctype html>
+<!--
+  Plantilla de la imagen Open Graph (1200x630). No se sirve al público:
+  scripts/generate_og_image.sh la rasteriza a public/og-image.png con Chrome
+  headless. Composición estática del tema "Constelación" (tokens del tema
+  oscuro de src/styles/theme.css y fuentes self-hosted de node_modules).
+  Copy en inglés: es el idioma default del sitio y el de las previsualizaciones
+  al compartir (los crawlers no ejecutan la auto-detección de idioma).
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @font-face {
+        font-family: 'Space Grotesk Variable';
+        src: url('../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2')
+          format('woff2-variations');
+        font-weight: 300 700;
+      }
+      @font-face {
+        font-family: 'JetBrains Mono Variable';
+        src: url('../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2')
+          format('woff2-variations');
+        font-weight: 100 800;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        position: relative;
+        background: #0a0e1a; /* --bg (tema oscuro) */
+      }
+      svg.constellation {
+        position: absolute;
+        inset: 0;
+      }
+      .content {
+        position: absolute;
+        left: 84px;
+        top: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 22px;
+      }
+      .eyebrow {
+        font-family: 'JetBrains Mono Variable', monospace;
+        font-size: 21px;
+        letter-spacing: 0.18em;
+        color: #94a3b8; /* --text-muted */
+      }
+      h1 {
+        font-family: 'Space Grotesk Variable', sans-serif;
+        font-weight: 700;
+        font-size: 96px;
+        letter-spacing: -0.02em;
+        color: #e8eaf0; /* --text */
+      }
+      .role {
+        font-family: 'JetBrains Mono Variable', monospace;
+        font-weight: 500;
+        font-size: 33px;
+        color: #22d3ee; /* --accent */
+      }
+      .role .cursor {
+        color: #f59e0b; /* --accent-2, el cursor ámbar del typewriter */
+      }
+      .url {
+        margin-top: 26px;
+        font-family: 'JetBrains Mono Variable', monospace;
+        font-size: 22px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Grafo-constelación estático: nodos cian y enlaces sutiles, cargado
+         hacia la derecha para dejar aire al texto. -->
+    <svg class="constellation" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+      <g stroke="#263349" stroke-width="1.5">
+        <path
+          d="M980 95 1105 170M1105 170 1030 300M1030 300 980 95M1030 300 1160 385M1030 300 880 240M880 240 980 95M880 240 790 380M790 380 940 470M940 470 1030 300M940 470 1100 545M790 380 660 520M1160 385 1105 170M660 520 540 580M880 240 720 140M720 140 560 90"
+        />
+        <path d="M120 560 240 590M240 590 340 520" stroke-opacity="0.6" />
+      </g>
+      <g fill="#22d3ee">
+        <circle cx="980" cy="95" r="7" />
+        <circle cx="1105" cy="170" r="5" />
+        <circle cx="1030" cy="300" r="8" />
+        <circle cx="1160" cy="385" r="5" />
+        <circle cx="880" cy="240" r="6" />
+        <circle cx="790" cy="380" r="7" />
+        <circle cx="940" cy="470" r="5" />
+        <circle cx="1100" cy="545" r="6" />
+        <circle cx="660" cy="520" r="5" />
+        <circle cx="540" cy="580" r="4" />
+        <circle cx="720" cy="140" r="5" />
+        <circle cx="560" cy="90" r="4" />
+        <circle cx="120" cy="560" r="4" fill-opacity="0.7" />
+        <circle cx="240" cy="590" r="5" fill-opacity="0.7" />
+        <circle cx="340" cy="520" r="4" fill-opacity="0.7" />
+      </g>
+      <g fill="#f59e0b">
+        <circle cx="1030" cy="300" r="3" />
+        <circle cx="790" cy="380" r="2.5" />
+      </g>
+    </svg>
+
+    <div class="content">
+      <p class="eyebrow">PHYSICS ENGINEER · CHIHUAHUA, MX</p>
+      <h1>Edgar Ontiveros</h1>
+      <p class="role">Machine Learning Engineer / Developer<span class="cursor">▊</span></p>
+      <p class="url">edgar-ontiveros.com</p>
+    </div>
+  </body>
+</html>
