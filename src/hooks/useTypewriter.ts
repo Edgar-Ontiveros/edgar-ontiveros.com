@@ -14,7 +14,7 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
  * El estado vive en el componente: para reiniciar el tipeo cuando cambia el
  * texto (p. ej. al cambiar de idioma), remonta el componente con `key`.
  */
-export function useTypewriter(text: string, speedMs = 55) {
+export function useTypewriter(text: string, speedMs = 75) {
   const chars = useMemo(() => Array.from(text), [text])
   const [count, setCount] = useState(() =>
     window.matchMedia(REDUCED_MOTION_QUERY).matches ? chars.length : 0,
