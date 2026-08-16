@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { Component, useRef, type ReactNode } from 'react'
 import { Constellation } from '../components/Constellation'
 import {
   ChevronDownIcon,
@@ -20,25 +20,54 @@ const socialClasses = 'rounded-md p-2 text-muted transition-colors hover:text-ac
 
 /* La capa invisible reserva la altura final del texto completo (incluido el
    ancho del cursor) para que el tipeo no cause layout shift; la animación
-   queda oculta a lectores de pantalla, que reciben el texto completo. */
+   queda oculta a lectores de pantalla, que reciben el texto completo.
+
+   translate="no" en la capa animada: los traductores de navegador (Google
+   Translate) reemplazan los nodos de texto por <font>, dejando huérfano el
+   nodo que React sigue actualizando — el tipeo se congela a media palabra.
+   La copia sr-only queda fuera de la exclusión para que un visitante que
+   traduzca la página no pierda el significado del tagline. Los <span> que
+   envuelven {display} y {text} son defensa adicional para traductores que
+   ignoren translate="no": con el texto como hijo único, React repone el
+   contenido vía textContent y se auto-repara. */
 function TypewriterLine({ text }: { text: string }) {
   const { display } = useTypewriter(text)
 
   return (
     <p className="font-mono text-lg text-accent sm:text-xl">
       <span className="sr-only">{text}</span>
-      <span aria-hidden="true" className="relative block">
+      <span aria-hidden="true" translate="no" className="relative block">
         <span className="invisible">
-          {text}
+          <span>{text}</span>
           <span className="ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em]" />
         </span>
         <span className="absolute inset-0">
-          {display}
+          <span>{display}</span>
           <span className="animate-blink ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em] bg-accent-2 motion-reduce:animate-none" />
         </span>
       </span>
     </p>
   )
+}
+
+/* Red de seguridad: si un traductor (u otra extensión que mute el DOM) hace
+   crashear la animación en fase de commit, se muestra el tagline completo
+   estático en vez de dejar el hero congelado o desmontar el árbol entero
+   (el sitio no tiene ningún otro error boundary). El remonte por key al
+   cambiar de idioma también resetea el estado de error. */
+class TypewriterBoundary extends Component<{ text: string; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  render() {
+    if (this.state.failed) {
+      return <p className="font-mono text-lg text-accent sm:text-xl">{this.props.text}</p>
+    }
+    return this.props.children
+  }
 }
 
 export function Hero({ content }: HeroProps) {
@@ -67,7 +96,9 @@ export function Hero({ content }: HeroProps) {
           </h1>
 
           {/* key: reinicia el tipeo cuando cambia el texto (p. ej. al cambiar de idioma). */}
-          <TypewriterLine key={hero.tagline} text={hero.tagline} />
+          <TypewriterBoundary key={hero.tagline} text={hero.tagline}>
+            <TypewriterLine text={hero.tagline} />
+          </TypewriterBoundary>
 
           <p className="max-w-xl text-base text-muted sm:text-lg">{hero.valueProp}</p>
 

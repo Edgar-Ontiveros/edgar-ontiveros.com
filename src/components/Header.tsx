@@ -111,6 +111,7 @@ export function Header({ content, theme, onToggleTheme, onToggleLanguage }: Head
             onClick={onToggleLanguage}
             aria-label={ui.languageToggle.label}
             lang={ui.languageToggle.code.toLowerCase()}
+            translate="no"
             className={`${controlClasses} font-mono text-sm`}
           >
             {ui.languageToggle.code}

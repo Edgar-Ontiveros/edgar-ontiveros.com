@@ -82,7 +82,11 @@ export function Footer({ content }: FooterProps) {
         </div>
 
         <p className="text-center font-mono text-xs text-muted">
-          © {year} {content.hero.name} · {content.footer.tagline}
+          {/* El tagline va en su propio <span> (hijo único de texto): con un
+              traductor de navegador activo, React repone hijos únicos vía
+              textContent al cambiar de idioma; un nodo de texto suelto entre
+              hermanos quedaría huérfano y se mostraría en el idioma viejo. */}
+          © {year} {content.hero.name} · <span>{content.footer.tagline}</span>
         </p>
       </div>
     </footer>
