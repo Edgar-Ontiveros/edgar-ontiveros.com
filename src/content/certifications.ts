@@ -42,6 +42,14 @@ function preview(base: string, width: number, height: number): CertificationPrev
 
 export const CERTIFICATIONS: Certification[] = [
   {
+    title: 'Fundamentos de Ingeniería de Software',
+    issuer: 'Platzi',
+    year: 2026,
+    date: '2026-08-18',
+    file: '2026-fundamentos-ingenieria-software.pdf',
+    preview: preview('2026-fundamentos-ingenieria-software', 1400, 1082),
+  },
+  {
     title: 'Docker Avanzado',
     issuer: 'Platzi',
     year: 2026,
