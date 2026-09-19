@@ -42,6 +42,22 @@ function preview(base: string, width: number, height: number): CertificationPrev
 
 export const CERTIFICATIONS: Certification[] = [
   {
+    title: 'Introducción a AWS: Fundamentos del Cloud Computing',
+    issuer: 'Platzi',
+    year: 2026,
+    date: '2026-09-19',
+    file: '2026-introduccion-aws-cloud-computing.pdf',
+    preview: preview('2026-introduccion-aws-cloud-computing', 1400, 1082),
+  },
+  {
+    title: 'Introducción a la Terminal y Línea de Comandos',
+    issuer: 'Platzi',
+    year: 2026,
+    date: '2026-09-19',
+    file: '2026-introduccion-terminal-linea-comandos.pdf',
+    preview: preview('2026-introduccion-terminal-linea-comandos', 1400, 1082),
+  },
+  {
     title: 'Fundamentos de Ingeniería de Software',
     issuer: 'Platzi',
     year: 2026,
