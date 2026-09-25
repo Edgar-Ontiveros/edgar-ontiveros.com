@@ -105,9 +105,9 @@ export const en: SiteContent = {
       'sales-reporting': {
         name: 'Sales Reporting System — SAP B1 HANA',
         description:
-          'Reverse-engineered a 53-KPI Excel workbook for the Commercial Director of a 10-branch steel distributor into a web app that queries SAP HANA live and read-only — every figure verified to the cent with close to 300 automated tests, 64 of them against real HANA.',
+          'Commercial analytics platform for a 10-branch steel distributor: queries SAP Business One (HANA) in real time and read-only over a site-to-site VPN, manages budgets, portfolios and auditing in PostgreSQL, and delivers 53 KPIs validated with ~300 automated tests, 64 of them against live HANA.',
         detail:
-          'SELECT-only runtime guard, roles with full audit log, versioned budgets, business-day year-over-year comparison, AWS end-to-end for about 24 USD/month.',
+          'FastAPI + React/TypeScript in Docker on AWS; SELECT-only runtime guard, RBAC with a full audit log, business-day-equivalent year-over-year comparison, and OIDC-gated CI/CD with manual approval.',
         screenshots: [
           {
             alt: 'Director dashboard of the sales reporting system with cut-off date and period filters, KPI cards for net sales, gross margin, new clients, invoices and operating profit, and twelve-month trend charts',

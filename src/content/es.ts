@@ -106,9 +106,9 @@ export const es: SiteContent = {
       'sales-reporting': {
         name: 'Sistema de Reporte de Ventas — SAP B1 HANA',
         description:
-          'Ingeniería inversa de un Excel de 53 indicadores de la Dirección Comercial de un distribuidor de acero con 10 sucursales, convertido en una app web que consulta SAP HANA en vivo y en solo lectura — cada cifra verificada al centavo con casi 300 pruebas automáticas, 64 de ellas contra HANA real.',
+          'Plataforma de analítica comercial para un distribuidor de acero con 10 sucursales: consulta SAP Business One (HANA) en tiempo real y en solo lectura a través de una VPN sitio a sitio, gestiona presupuestos, carteras y auditoría en PostgreSQL, y entrega 53 KPIs validados con ~300 pruebas automatizadas, 64 de ellas contra HANA real.',
         detail:
-          'Guardia en runtime que solo permite SELECT, roles con bitácora completa, presupuestos versionados, comparación anual por días hábiles y AWS de punta a punta por unos 24 USD al mes.',
+          'FastAPI + React/TypeScript en Docker sobre AWS; guardia en runtime que solo admite SELECT, RBAC con bitácora de auditoría completa, comparación anual por días hábiles equivalentes y CI/CD por OIDC con aprobación manual.',
         screenshots: [
           {
             alt: 'Tablero del Director del sistema de reporte de ventas con filtros de corte y periodo, tarjetas KPI de venta sin IVA, margen bruto, clientes nuevos, facturas y utilidad operativa, y gráficas de tendencia de doce meses',

@@ -55,7 +55,10 @@ function TypewriterLine({ text }: { text: string }) {
    estático en vez de dejar el hero congelado o desmontar el árbol entero
    (el sitio no tiene ningún otro error boundary). El remonte por key al
    cambiar de idioma también resetea el estado de error. */
-class TypewriterBoundary extends Component<{ text: string; children: ReactNode }, { failed: boolean }> {
+class TypewriterBoundary extends Component<
+  { text: string; children: ReactNode },
+  { failed: boolean }
+> {
   state = { failed: false }
 
   static getDerivedStateFromError() {
