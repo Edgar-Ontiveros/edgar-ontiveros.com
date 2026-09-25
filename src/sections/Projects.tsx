@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import type { SyntheticEvent } from 'react'
 import { Lightbox } from '../components/Lightbox'
 import type { LightboxItem } from '../components/Lightbox'
 import { GitHubIcon } from '../components/icons'
@@ -31,6 +32,87 @@ const ROTATION_STAGGER_MS = 900
     (~0.46), solo se ven completas en el visor. */
 const isLandscape = (shot: ProjectScreenshot) => shot.thumbWidth / shot.thumbHeight >= 0.75
 
+/** Duración del blur-up (placeholder desenfocado → miniatura nítida). */
+const BLUR_UP_MS = 400
+
+interface BlurUpImageProps {
+  shot: ProjectScreenshot
+  alt: string
+  hidden: boolean
+  reducedMotion: boolean
+}
+
+/**
+ * Miniatura con blur-up: debajo va el placeholder de ~24 px (data URI inline,
+ * desenfocado y ligeramente ampliado para ocultar el borde del blur); la
+ * imagen real arranca transparente y aparece en onLoad. Sin parpadeo con
+ * caché: si ya estaba completa al montar se marca cargada en un layout
+ * effect (antes del primer paint), y si al cargar Resource Timing la reporta
+ * servida desde caché (sin transferencia o revalidación 304 sin cuerpo; la
+ * carga lazy arranca al entrar en viewport, así que `complete` no basta) se
+ * muestra sin transición. Con
+ * reduced-motion el cambio es instantáneo. Ambas capas son absolute dentro
+ * del contenedor 2:1, así que no hay layout shift.
+ */
+function BlurUpImage({ shot, alt, hidden, reducedMotion }: BlurUpImageProps) {
+  const imgRef = useRef<HTMLImageElement>(null)
+  const [loaded, setLoaded] = useState(false)
+  const [instant, setInstant] = useState(false)
+
+  useLayoutEffect(() => {
+    const img = imgRef.current
+    if (img && img.complete && img.naturalWidth > 0) {
+      setInstant(true)
+      setLoaded(true)
+    }
+  }, [])
+
+  const onLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    const entries = performance.getEntriesByName(event.currentTarget.currentSrc)
+    const entry = entries[entries.length - 1] as PerformanceResourceTiming | undefined
+    // Cuerpo servido desde caché: sin transferencia (memoria/disco) o
+    // revalidación 304 (solo cabeceras, cuerpo de 0 bytes).
+    if (entry && (entry.transferSize === 0 || entry.encodedBodySize === 0)) {
+      setInstant(true)
+    }
+    setLoaded(true)
+  }
+
+  const animated = !instant && !reducedMotion
+
+  return (
+    <>
+      {shot.placeholder && (
+        <img
+          src={shot.placeholder}
+          alt=""
+          aria-hidden="true"
+          width={shot.thumbWidth}
+          height={shot.thumbHeight}
+          className="absolute inset-0 h-full w-full scale-110 object-cover blur-md"
+        />
+      )}
+      <img
+        ref={imgRef}
+        src={shot.thumb}
+        alt={alt}
+        aria-hidden={hidden ? true : undefined}
+        width={shot.thumbWidth}
+        height={shot.thumbHeight}
+        loading="lazy"
+        onLoad={onLoad}
+        // Estado observable desde fuera (verificación en navegador).
+        data-loaded={loaded ? 'true' : 'false'}
+        data-instant={instant ? 'true' : 'false'}
+        style={{ transitionDuration: animated ? `${BLUR_UP_MS}ms` : '0ms' }}
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity ease-out ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    </>
+  )
+}
+
 interface RotatingThumbnailProps {
   shots: ProjectScreenshot[]
   /** alt de cada captura, en el orden de `shots`. */
@@ -41,10 +123,10 @@ interface RotatingThumbnailProps {
 
 /**
  * Miniatura de la tarjeta: con varias capturas horizontales rota entre ellas
- * con un crossfade de opacidad; las imágenes van apiladas (absolute) dentro
- * del mismo contenedor 2:1, así no hay layout shift. Solo la visible queda
- * expuesta al lector de pantalla (alt propio; el resto aria-hidden y alt
- * vacío). Con prefers-reduced-motion, o con una sola captura, la primera
+ * con un crossfade de opacidad; cada captura (con su blur-up, BlurUpImage)
+ * va apilada (absolute) dentro del mismo contenedor 2:1, así no hay layout
+ * shift. Solo la visible queda expuesta al lector de pantalla (alt propio;
+ * el resto aria-hidden y alt vacío). Con prefers-reduced-motion, o con una sola captura, la primera
  * imagen queda fija. La rotación se pausa fuera del viewport y con la
  * pestaña oculta (mismo patrón que la constelación del hero).
  */
@@ -114,19 +196,21 @@ function RotatingThumbnail({ shots, alts, offsetMs, reducedMotion }: RotatingThu
       {visibleShots.map((shot, index) => {
         const isActive = index === active
         return (
-          <img
+          <div
             key={shot.thumb}
-            src={shot.thumb}
-            alt={isActive ? alts[index] : ''}
             aria-hidden={isActive ? undefined : true}
-            width={shot.thumbWidth}
-            height={shot.thumbHeight}
-            loading="lazy"
             style={{ transitionDuration: `${CROSSFADE_MS}ms` }}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity ease-in-out motion-reduce:transition-none ${
+            className={`absolute inset-0 transition-opacity ease-in-out motion-reduce:transition-none ${
               isActive ? 'opacity-100' : 'opacity-0'
             }`}
-          />
+          >
+            <BlurUpImage
+              shot={shot}
+              alt={isActive ? alts[index] : ''}
+              hidden={!isActive}
+              reducedMotion={reducedMotion}
+            />
+          </div>
         )
       })}
     </div>
