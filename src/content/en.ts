@@ -105,9 +105,9 @@ export const en: SiteContent = {
       quotes: {
         name: 'Quotation Management System',
         description:
-          'Internal platform for 11 branches: quote requests, business-hours SLA tracking across time zones, and quoted vs. confirmed revenue by branch, buyer, rep and client.',
+          'In production across 11 branches, replacing a WhatsApp-and-email process: quote requests with business-hours SLA tracking, and read-only SAP Business One (HANA) integration that links live purchase orders, derives their status and auto-notifies changes and overdue deliveries.',
         detail:
-          'Alembic migrations, background scheduler, pytest against real PostgreSQL, gated CI/CD deploys.',
+          'Site-to-site VPN to SAP across AWS regions, schema-level data hiding by role, ~900 automated tests, approval-gated CI/CD.',
         screenshots: [
           {
             alt: 'Quotation system dashboard with SLA, conversion and revenue indicators plus weekly trend charts',

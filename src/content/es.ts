@@ -106,9 +106,9 @@ export const es: SiteContent = {
       quotes: {
         name: 'Sistema de Gestión de Cotizaciones',
         description:
-          'Plataforma interna para 11 sucursales: solicitudes de cotización, seguimiento de SLA en horario hábil entre zonas horarias, e ingreso cotizado vs. confirmado por sucursal, comprador, vendedor y cliente.',
+          'En producción en 11 sucursales, sustituyendo un proceso por WhatsApp y correo: solicitudes de cotización con SLA en horario hábil, e integración de solo lectura con SAP Business One (HANA) que vincula las órdenes de compra reales, deriva su estatus y notifica automáticamente cambios y entregas vencidas.',
         detail:
-          'Migraciones con Alembic, scheduler en segundo plano, pytest contra PostgreSQL real y deploys condicionados por CI/CD.',
+          'VPN sitio a sitio hacia SAP entre regiones de AWS, ocultamiento de datos por rol a nivel de esquema, ~900 pruebas automatizadas, CI/CD con aprobación manual.',
         screenshots: [
           {
             alt: 'Dashboard del sistema de cotizaciones con indicadores de SLA, conversión e ingreso, y gráficas de tendencia semanal',

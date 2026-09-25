@@ -55,7 +55,14 @@ function screenshot(base: string): ProjectScreenshot {
 export const PROJECTS: Project[] = [
   {
     id: 'quotes',
-    technologies: ['FastAPI', 'PostgreSQL 17', 'React 19', 'Docker', 'GitHub Actions'],
+    technologies: [
+      'FastAPI',
+      'PostgreSQL',
+      'React + TypeScript',
+      'SAP HANA (hdbcli)',
+      'AWS',
+      'GitHub Actions',
+    ],
     screenshots: [
       screenshot('quotes-dashboard'),
       screenshot('quotes-requests'),
