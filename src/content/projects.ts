@@ -40,7 +40,8 @@ export interface Project {
 
 const IMAGE_DIR = '/images/projects'
 
-/** Todas las capturas comparten tamaño (1601x817 de origen). */
+/** Capturas heredadas de tamaño uniforme (1601x817 de origen). Las demás
+    llevan objetos literales con las dimensiones que imprime el script. */
 function screenshot(base: string): ProjectScreenshot {
   return {
     thumb: `${IMAGE_DIR}/${base}-thumb.webp`,
@@ -64,9 +65,46 @@ export const PROJECTS: Project[] = [
       'GitHub Actions',
     ],
     screenshots: [
-      screenshot('quotes-dashboard'),
-      screenshot('quotes-requests'),
-      screenshot('quotes-login'),
+      {
+        thumb: `${IMAGE_DIR}/quotes-1-dashboard-thumb.webp`,
+        thumbWidth: 800,
+        thumbHeight: 382,
+        large: `${IMAGE_DIR}/quotes-1-dashboard-large.webp`,
+        largeWidth: 1600,
+        largeHeight: 764,
+      },
+      {
+        thumb: `${IMAGE_DIR}/quotes-2-order-po-thumb.webp`,
+        thumbWidth: 800,
+        thumbHeight: 396,
+        large: `${IMAGE_DIR}/quotes-2-order-po-large.webp`,
+        largeWidth: 1600,
+        largeHeight: 791,
+      },
+      {
+        thumb: `${IMAGE_DIR}/quotes-3-requests-thumb.webp`,
+        thumbWidth: 800,
+        thumbHeight: 391,
+        large: `${IMAGE_DIR}/quotes-3-requests-large.webp`,
+        largeWidth: 1600,
+        largeHeight: 782,
+      },
+      {
+        thumb: `${IMAGE_DIR}/quotes-4-notifications-thumb.webp`,
+        thumbWidth: 800,
+        thumbHeight: 368,
+        large: `${IMAGE_DIR}/quotes-4-notifications-large.webp`,
+        largeWidth: 1600,
+        largeHeight: 736,
+      },
+      {
+        thumb: `${IMAGE_DIR}/quotes-5-mobile-thumb.webp`,
+        thumbWidth: 739,
+        thumbHeight: 1600,
+        large: `${IMAGE_DIR}/quotes-5-mobile-large.webp`,
+        largeWidth: 739,
+        largeHeight: 1600,
+      },
     ],
     repo: 'https://github.com/Edgar-Ontiveros/proyecto-cotizaciones',
     internal: true,

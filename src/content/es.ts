@@ -111,16 +111,24 @@ export const es: SiteContent = {
           'VPN sitio a sitio hacia SAP entre regiones de AWS, ocultamiento de datos por rol a nivel de esquema, ~900 pruebas automatizadas, CI/CD con aprobación manual.',
         screenshots: [
           {
-            alt: 'Dashboard del sistema de cotizaciones con indicadores de SLA, conversión e ingreso, y gráficas de tendencia semanal',
+            alt: 'Dashboard del sistema de cotizaciones con indicadores de volumen de solicitudes, banda de SLA, mediana de horas, conversión e ingreso confirmado, y gráficas de tendencia semanal, tiempo por etapa, embudo y distribución de bandas',
             caption: 'Dashboard de gestión',
           },
           {
-            alt: 'Lista de solicitudes de cotización con folio, estado, banda de SLA, prioridad y monto por solicitud',
+            alt: 'Lista de pedidos en SAP que vincula cada folio de cotización con sus órdenes de compra, con sucursal, estatus derivado, fecha de entrega, almacén y última actualización',
+            caption: 'Órdenes de compra vinculadas desde SAP',
+          },
+          {
+            alt: 'Lista de solicitudes de cotización con folio, cliente, fecha, estado, banda de SLA, prioridad y monto por solicitud',
             caption: 'Seguimiento de solicitudes',
           },
           {
-            alt: 'Pantalla de inicio de sesión del sistema de cotizaciones',
-            caption: 'Inicio de sesión',
+            alt: 'Panel del comprador con la bandeja de notificaciones abierta mostrando solicitudes asignadas y una alerta de orden de compra parcialmente recibida',
+            caption: 'Panel del comprador y notificaciones',
+          },
+          {
+            alt: 'Pantalla de inicio de sesión del sistema de cotizaciones en un teléfono móvil',
+            caption: 'Inicio de sesión móvil',
           },
         ],
       },

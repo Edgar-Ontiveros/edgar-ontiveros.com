@@ -110,16 +110,24 @@ export const en: SiteContent = {
           'Site-to-site VPN to SAP across AWS regions, schema-level data hiding by role, ~900 automated tests, approval-gated CI/CD.',
         screenshots: [
           {
-            alt: 'Quotation system dashboard with SLA, conversion and revenue indicators plus weekly trend charts',
+            alt: 'Quotation system dashboard with request volume, SLA band, median hours, conversion and confirmed revenue indicators plus weekly trend, stage time, funnel and band distribution charts',
             caption: 'Management dashboard',
           },
           {
-            alt: 'Quote request list with folio, status, SLA band, priority and amount per request',
+            alt: 'SAP orders list linking each quote folio to its purchase orders, with branch, derived status, delivery date, warehouse and last update',
+            caption: 'Purchase orders linked from SAP',
+          },
+          {
+            alt: 'Quote request list with folio, client, date, status, SLA band, priority and amount per request',
             caption: 'Quote request tracking',
           },
           {
-            alt: 'Sign-in screen of the quotation system',
-            caption: 'Sign in',
+            alt: 'Buyer panel with the open notification tray showing assigned requests and a partially received purchase order alert',
+            caption: 'Buyer panel and notifications',
+          },
+          {
+            alt: 'Sign-in screen of the quotation system on a mobile phone',
+            caption: 'Mobile sign in',
           },
         ],
       },
