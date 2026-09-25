@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Genera las imágenes WebP de la sección Projects desde raw-assets/screenshots/.
 
-Antes de exportar, PIXELA las zonas con datos de negocio reales (nombres de
+Antes de exportar, CENSURA (pixelado, color plano o desenfoque) las zonas con datos de negocio reales (nombres de
 clientes, montos, folios de factura) detectadas en la revisión manual de cada
 captura; los originales de raw-assets/ quedan intactos. Produce dos tamaños en
 public/images/projects/:
@@ -17,23 +17,64 @@ Requiere: Pillow (pip install pillow).
 
 import os
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 SIZES = ((800, "thumb", 80), (1600, "large", 76))
 SRC_DIR = "raw-assets/screenshots"
 OUT_DIR = "public/images/projects"
 
-# Tamaño de bloque del pixelado por defecto (texto ilegible, textura visible).
+# Modos de censura por caja (sin modo: pixelado).
+#  - pixelado: bloques de BLOCK px; texto ilegible con textura visible.
+#  - FLAT: color plano (promedio de la zona); para cuando la longitud o el
+#    color de lo pixelado seguirían delatando un resultado.
+#  - BLUR: desenfoque gaussiano fuerte (reducción + blur encadenados) que deja
+#    la mancha del texto sin ningún trazo recuperable; conserva mejor el
+#    aspecto de la UI que el pixelado.
 BLOCK = 12
-# Bloque "infinito": la caja queda como un color plano (promedio de la zona).
-# Para barras de gráficas, semáforos y texto coloreado, donde la longitud o el
-# color pixelado seguirían delatando el resultado por sucursal.
-FLAT = 100_000
+FLAT = "flat"
+BLUR = "blur"
+# BLUR: factor de reducción y radios de desenfoque (en la versión reducida y en
+# la restaurada). Con texto de ~10 px de alto, la reducción lo deja en <2 px
+# antes del primer blur: no queda ningún glifo que reconstruir.
+BLUR_SHRINK = 6
+BLUR_RADIUS_SMALL = 2.0
+BLUR_RADIUS_LARGE = 5.0
 
-# Cajas (x0, y0, x1, y1[, bloque]) en coordenadas del original de cada captura
+# Caja de censura: (x0, y0, x1, y1[, modo]).
+Box = tuple[int, int, int, int] | tuple[int, int, int, int, str]
+
+# Precio–volumen: barras (x0, x1, y_tope) medidas del original. La etiqueta
+# "N.N M" en pesos ocupa la franja de ~3 a ~9 px sobre el tope de cada barra y
+# puede sobresalir unos px a los lados; se tapa esa franja.
+YOY_BARS: list[tuple[int, int, int]] = [
+    (78, 96, 515),
+    (98, 116, 446),
+    (146, 164, 499),
+    (166, 184, 461),
+    (215, 233, 474),
+    (235, 253, 449),
+    (283, 301, 517),
+    (303, 321, 511),
+    (351, 369, 430),
+    (371, 389, 410),
+    (420, 438, 484),
+    (440, 458, 475),
+    (488, 506, 499),
+    (508, 526, 493),
+    (556, 574, 467),
+    (576, 594, 469),
+    (625, 643, 489),
+    (645, 663, 494),
+    (693, 711, 439),
+    (713, 731, 455),
+]
+YOY_BAR_LABEL_BOXES: list[Box] = [
+    (x0 - 8, top - 12, x1 + 8, top - 2, BLUR) for x0, x1, top in YOY_BARS
+]
+
+# Cajas (x0, y0, x1, y1[, modo]) en coordenadas del original de cada captura
 # sobre datos sensibles. Documentar aquí QUÉ tapa cada caja al agregar
 # capturas nuevas.
-Box = tuple[int, int, int, int] | tuple[int, int, int, int, int]
 REDACTIONS: dict[str, list[Box]] = {
     # Dashboard de cotizaciones (1600x764): valor del KPI "Confirmado (MXN)" y
     # su línea "origen" con importes MXN/USD; montos de la línea "Referencia
@@ -66,59 +107,63 @@ REDACTIONS: dict[str, list[Box]] = {
     ],
     # cotizaciones-5-movil.jpg: pantalla de acceso, sin datos de negocio.
     #
-    # Tablero del Director de ventas (871x889): valor, variación y % de los
-    # KPI Venta sin IVA, Margen bruto, Clientes nuevos y Facturas; ejes
-    # numéricos de las gráficas Venta sin IVA, Margen bruto y Utilidad
-    # operativa (pesos) y de Clientes nuevos (conteo). Sucursales quedan.
+    # Tablero del Director de ventas (871x889). Criterio: se tapan valores
+    # absolutos en pesos y conteos de negocio; quedan la UI, los porcentajes
+    # y los nombres de sucursal de la línea de filtros (sin valor asociado).
+    #  - Valor de los KPI Venta sin IVA, Margen bruto, Clientes nuevos y
+    #    Facturas (la línea "% vs mes anterior" bajo cada uno queda).
+    #  - Ejes en pesos de Venta sin IVA, Margen bruto y Utilidad operativa,
+    #    y eje de conteo de Clientes nuevos; las curvas/barras quedan.
     "reporte-ventas-1-tablero.jpg": [
-        (26, 354, 176, 390, FLAT),
-        (196, 354, 346, 392, FLAT),
-        (366, 354, 516, 402, FLAT),
-        (536, 354, 686, 390, FLAT),
-        (26, 494, 68, 634),
-        (454, 494, 496, 634),
-        (26, 722, 68, 864),
-        (450, 722, 498, 864),
+        (26, 356, 176, 375, BLUR),
+        (196, 356, 346, 375, BLUR),
+        (366, 356, 516, 375, BLUR),
+        (536, 356, 686, 375, BLUR),
+        (26, 494, 68, 634, BLUR),
+        (454, 494, 496, 634, BLUR),
+        (26, 722, 68, 864, BLUR),
+        (450, 722, 498, 864, BLUR),
     ],
-    # Presupuesto (766x868): resumen "N de 10 sucursales arriba de la meta",
-    # barras y % de cumplimiento por sucursal, tabla lateral (cumplimiento,
-    # presupuesto, venta real, variación), línea de totales globales y el
-    # cuerpo de la tabla inferior (semáforo, presupuestos, ventas, diferencia,
-    # días de venta). Solo quedan los nombres de sucursal y las cabeceras.
+    # Presupuesto (766x868). Sucursal anónima: barras, semáforos y porcentajes
+    # quedan; se tapan los nombres de sucursal y todo importe en pesos.
+    #  - Nombres de sucursal del eje de la gráfica de cumplimiento.
+    #  - Tabla lateral: columnas Presupuesto al corte, Venta real y Variación
+    #    (la columna Cumplimiento en % queda).
+    #  - Línea de totales: importes de Presupuesto al corte, Venta real,
+    #    Variación y Proyección de cierre (el % de cumplimiento global queda).
+    #  - Tabla inferior: columna Sucursal y columnas de pesos (presupuestos,
+    #    ventas y diferencia); el semáforo y "Días de venta" quedan.
     "reporte-ventas-2-presupuesto.jpg": [
-        (148, 279, 340, 295),
-        (108, 326, 374, 530, FLAT),
-        (418, 326, 754, 530, FLAT),
-        (16, 564, 640, 582, FLAT),
-        (124, 630, 756, 830, FLAT),
+        (26, 328, 106, 530, BLUR),
+        (486, 326, 754, 530, BLUR),
+        (204, 564, 252, 581, BLUR),
+        (298, 564, 346, 581, BLUR),
+        (393, 564, 440, 581, BLUR),
+        (525, 564, 573, 581, BLUR),
+        (12, 630, 122, 830, BLUR),
+        (170, 630, 645, 830, BLUR),
     ],
-    # Precio–volumen (772x868): "N de 10 sucursales crecieron", eje en pesos,
-    # barras y etiquetas de venta por sucursal, % de variación bajo cada
-    # sucursal y el cuerpo de la tabla (ventas, variación, kilos, $/KG).
+    # Precio–volumen (772x868). Se tapan el eje en pesos, la etiqueta de valor
+    # sobre cada barra (franja fija encima de cada barra), los nombres de
+    # sucursal del eje X y de la tabla, y las columnas de la tabla (pesos,
+    # kilos y $/KG). Quedan las barras pareadas, el % de variación bajo cada
+    # sucursal, el resumen "N de 10 sucursales crecieron" y la fila TOTAL
+    # (solo su etiqueta).
     "reporte-ventas-3-vs-anio.jpg": [
-        (426, 344, 548, 359),
-        (24, 386, 754, 547, FLAT),
-        (24, 556, 754, 571, FLAT),
-        (174, 626, 772, 844, FLAT),
+        (24, 386, 62, 546, BLUR),
+        *YOY_BAR_LABEL_BOXES,
+        (24, 547, 754, 558, BLUR),
+        (14, 646, 176, 842, BLUR),
+        (178, 626, 772, 844, BLUR),
     ],
-    # Tablero del Director en móvil (739x1600): valor y variación de los KPI
-    # Venta sin IVA, Margen bruto, Clientes nuevos y Facturas.
+    # Tablero del Director en móvil (739x1600): valor de los KPI Venta sin
+    # IVA, Margen bruto, Clientes nuevos y Facturas; sus "% vs mes anterior"
+    # y los nombres de sucursal de la línea de filtros quedan.
     "reporte-ventas-4-movil.jpg": [
-        (48, 830, 348, 912, FLAT),
-        (398, 800, 692, 884, FLAT),
-        (48, 1122, 348, 1238, FLAT),
-        (398, 1122, 692, 1208, FLAT),
-    ],
-    # Nombre del proveedor en el título, nombres de archivo con folio de
-    # factura, valores O.C./remisión/factura y columnas de importes
-    # (TOTAL, COSTO) incluida la fila de totales.
-    "ordenes-compra.png": [
-        (381, 22, 500, 52),
-        (322, 350, 668, 414),
-        (371, 583, 447, 603),
-        (547, 583, 585, 603),
-        (695, 583, 744, 603),
-        (1028, 648, 1288, 756),
+        (48, 834, 348, 876, BLUR),
+        (398, 805, 692, 848, BLUR),
+        (48, 1130, 348, 1168, BLUR),
+        (398, 1130, 692, 1172, BLUR),
     ],
 }
 
@@ -138,15 +183,24 @@ SCREENSHOTS: list[tuple[str, str]] = [
 ]
 
 
-def pixelate(image: Image.Image, box: Box) -> None:
-    """Pixelado grueso e irreversible de la región (bloques de BLOCK px, o
-    color plano con FLAT)."""
+def redact(image: Image.Image, box: Box) -> None:
+    """Censura irreversible de la región según el modo de la caja."""
     x0, y0, x1, y1 = box[:4]
-    block = box[4] if len(box) == 5 else BLOCK
+    mode = box[4] if len(box) == 5 else None
     region = image.crop((x0, y0, x1, y1))
     w, h = region.size
-    small = region.resize((max(1, w // block), max(1, h // block)), Image.BILINEAR)
-    image.paste(small.resize((w, h), Image.NEAREST), (x0, y0, x1, y1))
+    if mode == BLUR:
+        small = region.resize(
+            (max(1, w // BLUR_SHRINK), max(1, h // BLUR_SHRINK)), Image.BILINEAR
+        ).filter(ImageFilter.GaussianBlur(BLUR_RADIUS_SMALL))
+        result = small.resize((w, h), Image.BILINEAR).filter(
+            ImageFilter.GaussianBlur(BLUR_RADIUS_LARGE)
+        )
+    else:
+        block = 100_000 if mode == FLAT else BLOCK
+        small = region.resize((max(1, w // block), max(1, h // block)), Image.BILINEAR)
+        result = small.resize((w, h), Image.NEAREST)
+    image.paste(result, (x0, y0, x1, y1))
 
 
 def main() -> None:
@@ -161,7 +215,7 @@ def main() -> None:
             continue
         image = Image.open(path).convert("RGB")
         for box in REDACTIONS.get(src, []):
-            pixelate(image, box)
+            redact(image, box)
         for target, suffix, quality in SIZES:
             # Nunca se amplía: capturas más angostas que el objetivo (móvil)
             # conservan su ancho nativo.
