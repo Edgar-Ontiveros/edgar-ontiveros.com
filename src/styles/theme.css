@@ -45,6 +45,27 @@
   }
 }
 
+/* Tokens derivados: se definen una sola vez con color-mix() sobre los tokens
+   base, así siguen automáticamente al tema activo (claro u oscuro).
+   --bg-glass: header translúcido al hacer scroll. Contraste del texto del
+     header sobre el vidrio con el PEOR contenido posible debajo (blanco puro
+     bajo el tema oscuro, negro puro bajo el claro), al 85 %:
+       oscuro: --text 10.6:1 · --text-muted 5.0:1 · --accent 7.1:1
+       claro:  --text 12.0:1 · --text-muted 5.1:1
+     (al 70 % --text-muted daba 2.9:1 y 3.4:1: por eso el 85 %). Sobre las
+     superficies reales del sitio (--bg, --surface, blanco) todo queda ≥ 4.5:1;
+     --accent en tema claro baja a 3.9:1 solo si pasa por debajo una zona
+     grande azul marino de una captura.
+   --accent-glow: acento al 8 % para el spotlight de tarjetas y el resplandor
+     del hero; sobre --bg deja el texto en 14.1:1 / 6.6:1 (oscuro) y
+     15.3:1 / 6.5:1 (claro).
+   --accent-shadow: sombra teñida de acento para el hover lift. */
+:root {
+  --bg-glass: color-mix(in srgb, var(--bg) 85%, transparent);
+  --accent-glow: color-mix(in srgb, var(--accent) 8%, transparent);
+  --accent-shadow: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
 /* Fuentes self-hosted (@fontsource-variable, font-display: swap).
    --font-sans es la fuente por defecto del documento (preflight de Tailwind). */
 @theme {
@@ -73,4 +94,8 @@
   --color-accent: var(--accent);
   --color-accent-2: var(--accent-2);
   --color-border: var(--border);
+  --color-glass: var(--bg-glass);
+  --color-accent-glow: var(--accent-glow);
+  /* shadow-lift: sombra suave del hover lift (tarjetas y botones principales). */
+  --shadow-lift: 0 12px 28px -10px var(--accent-shadow);
 }

@@ -6,6 +6,8 @@ import { Timeline, TimelineItem } from '../components/Timeline'
 import { CERTIFICATIONS } from '../content/certifications'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
+import { useSpotlight } from '../hooks/useSpotlight'
+import { liftClasses } from '../lib/motion'
 
 interface EducationProps {
   content: SiteContent
@@ -17,6 +19,7 @@ export function Education({ content }: EducationProps) {
   /** Tarjeta que abrió el visor: el foco regresa ahí al cerrar. */
   const openedFrom = useRef<number | null>(null)
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const onSpotlightMove = useSpotlight()
 
   const openViewer = (index: number) => {
     openedFrom.current = index
@@ -67,8 +70,9 @@ export function Education({ content }: EducationProps) {
                 cardRefs.current[index] = el
               }}
               onClick={() => openViewer(index)}
+              onMouseMove={onSpotlightMove}
               aria-haspopup="dialog"
-              className="group flex h-full w-full flex-col rounded-lg border border-border bg-surface p-3 text-left transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+              className={`group spotlight-host relative flex h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-surface p-3 text-left ${liftClasses}`}
             >
               <span
                 style={{ transitionDelay: `${140 + index * 35}ms` }}
@@ -99,6 +103,7 @@ export function Education({ content }: EducationProps) {
                   </span>
                 </span>
               </span>
+              <span aria-hidden="true" className="spotlight" />
             </button>
           </li>
         ))}

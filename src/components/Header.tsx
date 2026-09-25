@@ -23,7 +23,7 @@ export function Header({ content, theme, onToggleTheme, onToggleLanguage }: Head
   const { nav, ui } = content
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
+    const onScroll = () => setScrolled(window.scrollY > 8)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -63,11 +63,15 @@ export function Header({ content, theme, onToggleTheme, onToggleLanguage }: Head
     }
   }, [menuOpen])
 
+  // Header "glass" al hacer scroll: fondo translúcido (token --bg-glass,
+  // contraste documentado en theme.css) + backdrop-blur + borde inferior,
+  // con transición de 200 ms; arriba del todo vuelve a su estado plano
+  // (transparente sobre el hero).
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 border-b transition-colors ${
+      className={`fixed inset-x-0 top-0 z-40 border-b transition-[background-color,border-color] duration-200 motion-reduce:transition-none ${
         scrolled || menuOpen
-          ? 'border-border bg-background/80 backdrop-blur-md'
+          ? 'border-border bg-glass backdrop-blur-md'
           : 'border-transparent bg-transparent'
       }`}
     >

@@ -1,13 +1,13 @@
 import { GitHubIcon, LinkedInIcon, WhatsAppIcon } from '../components/icons'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
+import { liftClasses } from '../lib/motion'
 
 interface ContactProps {
   content: SiteContent
 }
 
-const buttonClasses =
-  'inline-flex items-center gap-2 rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent'
+const buttonClasses = `inline-flex items-center gap-2 rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium ${liftClasses}`
 
 export function Contact({ content }: ContactProps) {
   const { contact } = content

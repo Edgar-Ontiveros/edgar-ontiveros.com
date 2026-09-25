@@ -5,6 +5,8 @@ import { GitHubIcon } from '../components/icons'
 import { Section, revealStaggerClasses } from '../components/Section'
 import { TechIcon } from '../components/TechIcon'
 import { showsChipIcon } from '../lib/chipIcon'
+import { liftClasses, liftWithinClasses } from '../lib/motion'
+import { useSpotlight } from '../hooks/useSpotlight'
 import { PROJECTS } from '../content/projects'
 import type { ProjectScreenshot } from '../content/projects'
 import type { SiteContent } from '../content/types'
@@ -137,6 +139,7 @@ export function Projects({ content }: ProjectsProps) {
   const [viewer, setViewer] = useState<{ project: number; shot: number } | null>(null)
   const openedFrom = useRef<number | null>(null)
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const onSpotlightMove = useSpotlight()
   const [reducedMotion, setReducedMotion] = useState(
     () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
   )
@@ -183,78 +186,86 @@ export function Projects({ content }: ProjectsProps) {
           const thumbIndexes = landscapeIndexes.length > 0 ? landscapeIndexes : [0]
           return (
             <li key={project.id} className="h-full">
-              <article
+              {/* El reveal (stagger) va en el wrapper y el lift/spotlight en
+                  el article: sus transiciones de transform no se mezclan. */}
+              <div
                 style={{ transitionDelay: `${80 + index * 60}ms` }}
-                className={`flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface ${revealStaggerClasses}`}
+                className={`h-full ${revealStaggerClasses}`}
               >
-                <button
-                  type="button"
-                  ref={(el) => {
-                    cardRefs.current[index] = el
-                  }}
-                  onClick={() => openViewer(index)}
-                  aria-haspopup="dialog"
-                  aria-label={`${projects.viewScreenshots}: ${texts.name}`}
-                  className="group block w-full border-b border-border"
+                <article
+                  onMouseMove={onSpotlightMove}
+                  className={`spotlight-host relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface ${liftWithinClasses}`}
                 >
-                  {/* Proporción fija ~2:1 + object-cover: la retícula queda
+                  <button
+                    type="button"
+                    ref={(el) => {
+                      cardRefs.current[index] = el
+                    }}
+                    onClick={() => openViewer(index)}
+                    aria-haspopup="dialog"
+                    aria-label={`${projects.viewScreenshots}: ${texts.name}`}
+                    className="group block w-full border-b border-border"
+                  >
+                    {/* Proporción fija ~2:1 + object-cover: la retícula queda
                       pareja sin deformar la imagen. El aria-label del botón
                       nombra la acción; la imagen visible lleva su alt. */}
-                  <RotatingThumbnail
-                    shots={thumbIndexes.map((shotIndex) => project.screenshots[shotIndex])}
-                    alts={thumbIndexes.map(
-                      (shotIndex) => texts.screenshots[shotIndex]?.alt ?? texts.name,
-                    )}
-                    offsetMs={index * ROTATION_STAGGER_MS}
-                    reducedMotion={reducedMotion}
-                  />
-                </button>
-                <div className="flex flex-1 flex-col p-5 sm:p-6">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <h3 className="font-display text-lg font-semibold">{texts.name}</h3>
-                    {/* La etiqueta solo aparece cuando NO hay ningún enlace
+                    <RotatingThumbnail
+                      shots={thumbIndexes.map((shotIndex) => project.screenshots[shotIndex])}
+                      alts={thumbIndexes.map(
+                        (shotIndex) => texts.screenshots[shotIndex]?.alt ?? texts.name,
+                      )}
+                      offsetMs={index * ROTATION_STAGGER_MS}
+                      reducedMotion={reducedMotion}
+                    />
+                  </button>
+                  <div className="flex flex-1 flex-col p-5 sm:p-6">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <h3 className="font-display text-lg font-semibold">{texts.name}</h3>
+                      {/* La etiqueta solo aparece cuando NO hay ningún enlace
                         que la sustituya. */}
-                    {project.internal && !project.repo && (
-                      <span className="rounded-full border border-border bg-background px-2.5 py-0.5 font-mono text-xs whitespace-nowrap text-muted">
-                        {projects.internalTag}
-                      </span>
+                      {project.internal && !project.repo && (
+                        <span className="rounded-full border border-border bg-background px-2.5 py-0.5 font-mono text-xs whitespace-nowrap text-muted">
+                          {projects.internalTag}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+                      {texts.description}
+                    </p>
+                    <p className="mt-2 font-mono text-xs leading-relaxed text-muted">
+                      {texts.detail}
+                    </p>
+                    <ul role="list" className="mt-auto flex flex-wrap gap-2 pt-5">
+                      {project.technologies.map((tech) => (
+                        <li
+                          key={tech}
+                          className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-muted"
+                        >
+                          {showsChipIcon(iconName(tech)) && (
+                            <TechIcon name={iconName(tech)} className="h-3.5 w-3.5" />
+                          )}
+                          {tech}
+                        </li>
+                      ))}
+                    </ul>
+                    {project.repo && (
+                      <div className="mt-5">
+                        <a
+                          href={project.repo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${projects.viewRepo}: ${texts.name}`}
+                          className={`inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-2.5 text-sm font-medium ${liftClasses}`}
+                        >
+                          <GitHubIcon className="h-5 w-5" />
+                          GitHub
+                        </a>
+                      </div>
                     )}
                   </div>
-                  <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
-                    {texts.description}
-                  </p>
-                  <p className="mt-2 font-mono text-xs leading-relaxed text-muted">
-                    {texts.detail}
-                  </p>
-                  <ul role="list" className="mt-auto flex flex-wrap gap-2 pt-5">
-                    {project.technologies.map((tech) => (
-                      <li
-                        key={tech}
-                        className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 font-mono text-xs text-muted"
-                      >
-                        {showsChipIcon(iconName(tech)) && (
-                          <TechIcon name={iconName(tech)} className="h-3.5 w-3.5" />
-                        )}
-                        {tech}
-                      </li>
-                    ))}
-                  </ul>
-                  {project.repo && (
-                    <div className="mt-5">
-                      <a
-                        href={project.repo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${projects.viewRepo}: ${texts.name}`}
-                        className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent motion-reduce:transition-none"
-                      >
-                        <GitHubIcon className="h-5 w-5" />
-                        GitHub
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </article>
+                  <span aria-hidden="true" className="spotlight" />
+                </article>
+              </div>
             </li>
           )
         })}

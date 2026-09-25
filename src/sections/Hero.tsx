@@ -11,6 +11,7 @@ import { CONSTELLATION_TECHNOLOGIES } from '../content/constellation'
 import { site } from '../content/site'
 import type { SiteContent } from '../content/types'
 import { useTypewriter } from '../hooks/useTypewriter'
+import { liftClasses } from '../lib/motion'
 
 interface HeroProps {
   content: SiteContent
@@ -91,10 +92,17 @@ export function Hero({ content }: HeroProps) {
       <div className="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6">
         <div
           ref={textBlockRef}
-          className="flex flex-col items-center gap-5 text-center md:items-start md:text-left"
+          className="relative flex flex-col items-center gap-5 text-center md:items-start md:text-left"
         >
+          {/* Resplandor decorativo: -z-10 lo manda detrás del texto pero, por
+              orden en el DOM, delante del contenedor de la constelación
+              (también -z-10 y anterior). */}
+          <div
+            aria-hidden="true"
+            className="hero-glow pointer-events-none absolute -inset-x-24 -inset-y-16 -z-10"
+          />
           <p className="font-mono text-xs tracking-[0.2em] text-muted sm:text-sm">{hero.eyebrow}</p>
-          <h1 className="font-display text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          <h1 className="gradient-name font-display text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
             {hero.name}
           </h1>
 
@@ -108,14 +116,14 @@ export function Hero({ content }: HeroProps) {
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3 md:justify-start">
             <a
               href="#contact"
-              className="rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-background transition-colors hover:bg-accent/85"
+              className={`rounded-md border border-accent bg-accent px-5 py-2.5 text-sm font-medium text-background hover:bg-accent/85 ${liftClasses}`}
             >
               {hero.ctaContact}
             </a>
             <a
               href={site.cvPdf}
               download
-              className="rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent"
+              className={`rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium ${liftClasses}`}
             >
               {hero.ctaDownloadCv}
             </a>

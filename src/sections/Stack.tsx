@@ -7,6 +7,7 @@ import type { Theme } from '../hooks/useTheme'
 import { ensureContrast } from '../lib/brandColor'
 import { DEVICON_ICONS } from '../lib/deviconIcons'
 import { BRAND_ICONS } from '../lib/techIcons'
+import { useSpotlight } from '../hooks/useSpotlight'
 
 interface StackProps {
   content: SiteContent
@@ -20,6 +21,7 @@ function readSurfaceColor(): string {
 export function Stack({ content, theme }: StackProps) {
   const { stack } = content
   const [surfaceColor, setSurfaceColor] = useState(readSurfaceColor)
+  const onSpotlightMove = useSpotlight()
 
   // El token --surface cambia con el tema DESPUÉS del render (el efecto de
   // useTheme aplica data-theme en el commit): se relee en un rAF, que corre
@@ -66,7 +68,8 @@ export function Stack({ content, theme }: StackProps) {
               {category.technologies.map((tech, cellIndex) => (
                 <li
                   key={tech}
-                  className="group rounded-lg border border-border transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  onMouseMove={onSpotlightMove}
+                  className="group spotlight-host relative overflow-hidden rounded-lg border border-border transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
                   <div
                     style={{ transitionDelay: `${cardIndex * 70 + 120 + cellIndex * 35}ms` }}
@@ -81,6 +84,7 @@ export function Stack({ content, theme }: StackProps) {
                       {tech}
                     </span>
                   </div>
+                  <span aria-hidden="true" className="spotlight" />
                 </li>
               ))}
             </ul>
