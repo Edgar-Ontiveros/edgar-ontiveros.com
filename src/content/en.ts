@@ -102,6 +102,31 @@ export const en: SiteContent = {
     viewScreenshots: 'View screenshots',
     viewRepo: 'View repository on GitHub',
     items: {
+      'sales-reporting': {
+        name: 'Sales Reporting System — SAP B1 HANA',
+        description:
+          'Reverse-engineered a 53-KPI Excel workbook for the Commercial Director of a 10-branch steel distributor into a web app that queries SAP HANA live and read-only — every figure verified to the cent with close to 300 automated tests, 64 of them against real HANA.',
+        detail:
+          'SELECT-only runtime guard, roles with full audit log, versioned budgets, business-day year-over-year comparison, AWS end-to-end for about 24 USD/month.',
+        screenshots: [
+          {
+            alt: 'Director dashboard of the sales reporting system with cut-off date and period filters, KPI cards for net sales, gross margin, new clients, invoices and operating profit, and twelve-month trend charts',
+            caption: 'Director dashboard',
+          },
+          {
+            alt: 'Budget page with a per-branch budget compliance bar chart against the 100% target, a traffic-light legend and a table of monthly budget, daily budget, estimated and actual sales per branch',
+            caption: 'Budget compliance by branch',
+          },
+          {
+            alt: 'Price–volume page comparing sales against the same month of the previous year by equivalent business days, with paired bars per branch and a table of sales, variation, kilograms and price per kilogram',
+            caption: 'Year-over-year comparison by business days',
+          },
+          {
+            alt: 'Director dashboard of the sales reporting system on a mobile phone, with the filter summary and stacked KPI cards',
+            caption: 'Mobile dashboard',
+          },
+        ],
+      },
       quotes: {
         name: 'Quotation Management System',
         description:

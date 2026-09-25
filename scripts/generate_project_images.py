@@ -23,9 +23,18 @@ SIZES = ((800, "thumb", 80), (1600, "large", 76))
 SRC_DIR = "raw-assets/screenshots"
 OUT_DIR = "public/images/projects"
 
-# Cajas (x0, y0, x1, y1) en coordenadas del original de cada captura sobre
-# datos sensibles. Documentar aquí QUÉ tapa cada caja al agregar capturas nuevas.
-REDACTIONS: dict[str, list[tuple[int, int, int, int]]] = {
+# Tamaño de bloque del pixelado por defecto (texto ilegible, textura visible).
+BLOCK = 12
+# Bloque "infinito": la caja queda como un color plano (promedio de la zona).
+# Para barras de gráficas, semáforos y texto coloreado, donde la longitud o el
+# color pixelado seguirían delatando el resultado por sucursal.
+FLAT = 100_000
+
+# Cajas (x0, y0, x1, y1[, bloque]) en coordenadas del original de cada captura
+# sobre datos sensibles. Documentar aquí QUÉ tapa cada caja al agregar
+# capturas nuevas.
+Box = tuple[int, int, int, int] | tuple[int, int, int, int, int]
+REDACTIONS: dict[str, list[Box]] = {
     # Dashboard de cotizaciones (1600x764): valor del KPI "Confirmado (MXN)" y
     # su línea "origen" con importes MXN/USD; montos de la línea "Referencia
     # (cotizadas hoy)". Las métricas operativas (conteos, horas, %) quedan.
@@ -56,6 +65,50 @@ REDACTIONS: dict[str, list[tuple[int, int, int, int]]] = {
         (1126, 404, 1202, 427),
     ],
     # cotizaciones-5-movil.jpg: pantalla de acceso, sin datos de negocio.
+    #
+    # Tablero del Director de ventas (871x889): valor, variación y % de los
+    # KPI Venta sin IVA, Margen bruto, Clientes nuevos y Facturas; ejes
+    # numéricos de las gráficas Venta sin IVA, Margen bruto y Utilidad
+    # operativa (pesos) y de Clientes nuevos (conteo). Sucursales quedan.
+    "reporte-ventas-1-tablero.jpg": [
+        (26, 354, 176, 390, FLAT),
+        (196, 354, 346, 392, FLAT),
+        (366, 354, 516, 402, FLAT),
+        (536, 354, 686, 390, FLAT),
+        (26, 494, 68, 634),
+        (454, 494, 496, 634),
+        (26, 722, 68, 864),
+        (450, 722, 498, 864),
+    ],
+    # Presupuesto (766x868): resumen "N de 10 sucursales arriba de la meta",
+    # barras y % de cumplimiento por sucursal, tabla lateral (cumplimiento,
+    # presupuesto, venta real, variación), línea de totales globales y el
+    # cuerpo de la tabla inferior (semáforo, presupuestos, ventas, diferencia,
+    # días de venta). Solo quedan los nombres de sucursal y las cabeceras.
+    "reporte-ventas-2-presupuesto.jpg": [
+        (148, 279, 340, 295),
+        (108, 326, 374, 530, FLAT),
+        (418, 326, 754, 530, FLAT),
+        (16, 564, 640, 582, FLAT),
+        (124, 630, 756, 830, FLAT),
+    ],
+    # Precio–volumen (772x868): "N de 10 sucursales crecieron", eje en pesos,
+    # barras y etiquetas de venta por sucursal, % de variación bajo cada
+    # sucursal y el cuerpo de la tabla (ventas, variación, kilos, $/KG).
+    "reporte-ventas-3-vs-anio.jpg": [
+        (426, 344, 548, 359),
+        (24, 386, 754, 547, FLAT),
+        (24, 556, 754, 571, FLAT),
+        (174, 626, 772, 844, FLAT),
+    ],
+    # Tablero del Director en móvil (739x1600): valor y variación de los KPI
+    # Venta sin IVA, Margen bruto, Clientes nuevos y Facturas.
+    "reporte-ventas-4-movil.jpg": [
+        (48, 830, 348, 912, FLAT),
+        (398, 800, 692, 884, FLAT),
+        (48, 1122, 348, 1238, FLAT),
+        (398, 1122, 692, 1208, FLAT),
+    ],
     # Nombre del proveedor en el título, nombres de archivo con folio de
     # factura, valores O.C./remisión/factura y columnas de importes
     # (TOTAL, COSTO) incluida la fila de totales.
@@ -70,6 +123,10 @@ REDACTIONS: dict[str, list[tuple[int, int, int, int]]] = {
 }
 
 SCREENSHOTS: list[tuple[str, str]] = [
+    ("reporte-ventas-1-tablero.jpg", "sales-1-dashboard"),
+    ("reporte-ventas-2-presupuesto.jpg", "sales-2-budget"),
+    ("reporte-ventas-3-vs-anio.jpg", "sales-3-yoy"),
+    ("reporte-ventas-4-movil.jpg", "sales-4-mobile"),
     ("cotizaciones-1-tablero.jpg", "quotes-1-dashboard"),
     ("cotizaciones-2-pedido-oc.jpg", "quotes-2-order-po"),
     ("cotizaciones-3-solicitudes.jpg", "quotes-3-requests"),
@@ -81,12 +138,15 @@ SCREENSHOTS: list[tuple[str, str]] = [
 ]
 
 
-def pixelate(image: Image.Image, box: tuple[int, int, int, int]) -> None:
-    """Pixelado grueso e irreversible de la región (bloques de ~12px)."""
-    region = image.crop(box)
+def pixelate(image: Image.Image, box: Box) -> None:
+    """Pixelado grueso e irreversible de la región (bloques de BLOCK px, o
+    color plano con FLAT)."""
+    x0, y0, x1, y1 = box[:4]
+    block = box[4] if len(box) == 5 else BLOCK
+    region = image.crop((x0, y0, x1, y1))
     w, h = region.size
-    small = region.resize((max(1, w // 12), max(1, h // 12)), Image.BILINEAR)
-    image.paste(small.resize((w, h), Image.NEAREST), box)
+    small = region.resize((max(1, w // block), max(1, h // block)), Image.BILINEAR)
+    image.paste(small.resize((w, h), Image.NEAREST), (x0, y0, x1, y1))
 
 
 def main() -> None:

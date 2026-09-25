@@ -103,6 +103,31 @@ export const es: SiteContent = {
     viewScreenshots: 'Ver capturas',
     viewRepo: 'Ver repositorio en GitHub',
     items: {
+      'sales-reporting': {
+        name: 'Sistema de Reporte de Ventas — SAP B1 HANA',
+        description:
+          'Ingeniería inversa de un Excel de 53 indicadores de la Dirección Comercial de un distribuidor de acero con 10 sucursales, convertido en una app web que consulta SAP HANA en vivo y en solo lectura — cada cifra verificada al centavo con casi 300 pruebas automáticas, 64 de ellas contra HANA real.',
+        detail:
+          'Guardia en runtime que solo permite SELECT, roles con bitácora completa, presupuestos versionados, comparación anual por días hábiles y AWS de punta a punta por unos 24 USD al mes.',
+        screenshots: [
+          {
+            alt: 'Tablero del Director del sistema de reporte de ventas con filtros de corte y periodo, tarjetas KPI de venta sin IVA, margen bruto, clientes nuevos, facturas y utilidad operativa, y gráficas de tendencia de doce meses',
+            caption: 'Tablero del Director',
+          },
+          {
+            alt: 'Página de presupuesto con gráfica de barras de cumplimiento por sucursal contra la meta del 100 %, leyenda de semáforo y tabla de presupuesto mensual, diario, venta estimada y venta real por sucursal',
+            caption: 'Cumplimiento del presupuesto por sucursal',
+          },
+          {
+            alt: 'Página precio–volumen que compara la venta contra el mismo mes del año anterior por días hábiles equivalentes, con barras pareadas por sucursal y tabla de venta, variación, kilos y precio por kilo',
+            caption: 'Comparación anual por días hábiles',
+          },
+          {
+            alt: 'Tablero del Director del sistema de reporte de ventas en un teléfono móvil, con el resumen de filtros y las tarjetas KPI apiladas',
+            caption: 'Tablero móvil',
+          },
+        ],
+      },
       quotes: {
         name: 'Sistema de Gestión de Cotizaciones',
         description:

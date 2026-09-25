@@ -12,7 +12,13 @@
  * URLs verificadas con respuesta 200). La etiqueta "Proyecto interno" solo se
  * muestra en tarjetas que no tengan ningún enlace.
  */
-export const PROJECT_IDS = ['quotes', 'pricing', 'codegen', 'purchase-orders'] as const
+export const PROJECT_IDS = [
+  'sales-reporting',
+  'quotes',
+  'pricing',
+  'codegen',
+  'purchase-orders',
+] as const
 
 export type ProjectId = (typeof PROJECT_IDS)[number]
 
@@ -54,6 +60,53 @@ function screenshot(base: string): ProjectScreenshot {
 }
 
 export const PROJECTS: Project[] = [
+  {
+    id: 'sales-reporting',
+    technologies: [
+      'FastAPI',
+      'PostgreSQL',
+      'SAP HANA (hdbcli)',
+      'React + TypeScript',
+      'Docker',
+      'AWS',
+    ],
+    screenshots: [
+      {
+        thumb: `${IMAGE_DIR}/sales-1-dashboard-thumb.webp`,
+        thumbWidth: 800,
+        thumbHeight: 817,
+        large: `${IMAGE_DIR}/sales-1-dashboard-large.webp`,
+        largeWidth: 871,
+        largeHeight: 889,
+      },
+      {
+        thumb: `${IMAGE_DIR}/sales-2-budget-thumb.webp`,
+        thumbWidth: 766,
+        thumbHeight: 868,
+        large: `${IMAGE_DIR}/sales-2-budget-large.webp`,
+        largeWidth: 766,
+        largeHeight: 868,
+      },
+      {
+        thumb: `${IMAGE_DIR}/sales-3-yoy-thumb.webp`,
+        thumbWidth: 772,
+        thumbHeight: 868,
+        large: `${IMAGE_DIR}/sales-3-yoy-large.webp`,
+        largeWidth: 772,
+        largeHeight: 868,
+      },
+      {
+        thumb: `${IMAGE_DIR}/sales-4-mobile-thumb.webp`,
+        thumbWidth: 739,
+        thumbHeight: 1600,
+        large: `${IMAGE_DIR}/sales-4-mobile-large.webp`,
+        largeWidth: 739,
+        largeHeight: 1600,
+      },
+    ],
+    repo: 'https://github.com/Edgar-Ontiveros/ventas-proyecto',
+    internal: true,
+  },
   {
     id: 'quotes',
     technologies: [
