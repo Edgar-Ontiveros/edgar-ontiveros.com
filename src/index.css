@@ -50,21 +50,23 @@
     }
   }
 
-  /* Resplandor radial tenue detrás del texto del hero (sobre la constelación,
-     bajo el texto). */
+  /* Resplandor radial muy tenue detrás del texto del hero (sobre la
+     constelación, bajo el texto): acento al 2 % y caída corta, para que los
+     nodos y líneas de la constelación se vean nítidos a través de él. */
   .hero-glow {
-    background: radial-gradient(ellipse at center, var(--accent-glow), transparent 70%);
+    background: radial-gradient(ellipse at center, var(--accent-glow-soft), transparent 60%);
   }
 
-  /* Nombre del hero con degradado de acento; fallback sólido en acento
-     donde background-clip: text no aplica. */
+  /* Nombre del hero con degradado sutil entre tonos fríos hermanos (acento
+     cian → teal vecino); fallback sólido en acento donde background-clip:
+     text no aplica. */
   .gradient-name {
     color: var(--accent);
   }
 
   @supports (background-clip: text) or (-webkit-background-clip: text) {
     .gradient-name {
-      background-image: linear-gradient(90deg, var(--accent), var(--accent-2));
+      background-image: linear-gradient(90deg, var(--accent), var(--accent-teal));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
