@@ -9,10 +9,13 @@ const LIGHT_SCHEME_QUERY = '(prefers-color-scheme: light)'
 const DESKTOP_QUERY = '(min-width: 768px)'
 
 // ── Densidad: una sola red homogénea, proporcional al área del canvas ──
-const DENSITY_DESKTOP = 1 / 11000 // nodos por px²
-const DENSITY_MOBILE = 1 / 16000
-const MIN_NODES = 24
-const MAX_NODES = 140
+// Densidad base ×1.2 (y clamp escalado en la misma proporción, para que el
+// aumento se aprecie igual en móvil y en pantallas grandes).
+const DENSITY_SCALE = 1.2
+const DENSITY_DESKTOP = DENSITY_SCALE / 11000 // nodos por px²
+const DENSITY_MOBILE = DENSITY_SCALE / 16000
+const MIN_NODES = Math.round(24 * DENSITY_SCALE) // 29
+const MAX_NODES = Math.round(140 * DENSITY_SCALE) // 168
 /** Re-siembra solo si el objetivo difiere >15% del actual (evita pops al redimensionar). */
 const RESEED_TOLERANCE = 0.15
 
