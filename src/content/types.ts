@@ -32,8 +32,10 @@ export interface SiteContent {
   hero: {
     eyebrow: string
     name: string
-    /** Texto de la línea typewriter. */
-    tagline: string
+    /** Títulos que rota el typewriter del hero, en el orden del ciclo. Van en
+        inglés en ambos idiomas: son los términos de industria con los que se
+        busca el perfil. */
+    taglines: string[]
     valueProp: string
     /** Nombre accesible de la lista sr-only con el vocabulario de la constelación. */
     constellationLabel: string

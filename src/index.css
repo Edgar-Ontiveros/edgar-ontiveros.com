@@ -56,22 +56,6 @@
   .hero-glow {
     background: radial-gradient(ellipse at center, var(--accent-glow-soft), transparent 60%);
   }
-
-  /* Nombre del hero con degradado sutil entre tonos fríos hermanos (acento
-     cian → teal vecino); fallback sólido en acento donde background-clip:
-     text no aplica. */
-  .gradient-name {
-    color: var(--accent);
-  }
-
-  @supports (background-clip: text) or (-webkit-background-clip: text) {
-    .gradient-name {
-      background-image: linear-gradient(90deg, var(--accent), var(--accent-teal));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-  }
 }
 
 /* Transición de tema: useTheme pone .theme-transition en <html> SOLO al

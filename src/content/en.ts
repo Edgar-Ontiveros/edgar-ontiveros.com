@@ -16,7 +16,7 @@ export const en: SiteContent = {
   hero: {
     eyebrow: 'PHYSICS ENGINEER · CHIHUAHUA, MX',
     name: 'Edgar Ontiveros',
-    tagline: 'Machine Learning Engineer / Developer',
+    taglines: ['Machine Learning Engineer', 'Full Stack Developer', 'Cloud Engineer'],
     valueProp:
       'I take systems from idea to production — the API, the data model, the interface, and the deploy.',
     constellationLabel: 'Technologies in the constellation',

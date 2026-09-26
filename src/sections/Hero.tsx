@@ -19,31 +19,33 @@ interface HeroProps {
 
 const socialClasses = 'rounded-md p-2 text-muted transition-colors hover:text-accent'
 
-/* La capa invisible reserva la altura final del texto completo (incluido el
-   ancho del cursor) para que el tipeo no cause layout shift; la animación
-   queda oculta a lectores de pantalla, que reciben el texto completo.
+/* Subtítulo con typewriter rotativo. La capa invisible reserva la altura
+   del título más largo (incluido el ancho del cursor) para que el tipeo y el
+   borrado no causen layout shift. La animación queda oculta a lectores de
+   pantalla (aria-hidden) y el <p> expone un aria-label ESTABLE con los tres
+   títulos, sin aria-live: nada se anuncia en cada cambio.
 
    translate="no" en la capa animada: los traductores de navegador (Google
    Translate) reemplazan los nodos de texto por <font>, dejando huérfano el
    nodo que React sigue actualizando — el tipeo se congela a media palabra.
-   La copia sr-only queda fuera de la exclusión para que un visitante que
-   traduzca la página no pierda el significado del tagline. Los <span> que
-   envuelven {display} y {text} son defensa adicional para traductores que
-   ignoren translate="no": con el texto como hijo único, React repone el
-   contenido vía textContent y se auto-repara. */
-function TypewriterLine({ text }: { text: string }) {
-  const { display } = useTypewriter(text)
+   Los <span> que envuelven {display} y {longest} son defensa adicional para
+   traductores que ignoren translate="no": con el texto como hijo único,
+   React repone el contenido vía textContent y se auto-repara. */
+function TypewriterLine({ titles }: { titles: string[] }) {
+  const { display } = useTypewriter(titles)
+  const longest = titles.reduce((a, b) => (Array.from(b).length > Array.from(a).length ? b : a), '')
 
   return (
-    <p className="font-mono text-lg text-accent sm:text-xl">
-      <span className="sr-only">{text}</span>
+    <p className="font-mono text-lg text-accent sm:text-xl" aria-label={titles.join(' · ')}>
       <span aria-hidden="true" translate="no" className="relative block">
         <span className="invisible">
-          <span>{text}</span>
+          <span>{longest}</span>
           <span className="ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em]" />
         </span>
         <span className="absolute inset-0">
           <span>{display}</span>
+          {/* Cursor: parpadea siempre durante el ciclo; con reduced-motion
+              queda fijo. */}
           <span className="animate-blink ml-1 inline-block h-[1.1em] w-[0.5ch] translate-y-[0.2em] bg-accent-2 motion-reduce:animate-none" />
         </span>
       </span>
@@ -52,12 +54,12 @@ function TypewriterLine({ text }: { text: string }) {
 }
 
 /* Red de seguridad: si un traductor (u otra extensión que mute el DOM) hace
-   crashear la animación en fase de commit, se muestra el tagline completo
-   estático en vez de dejar el hero congelado o desmontar el árbol entero
+   crashear la animación en fase de commit, se muestran los títulos completos
+   estáticos en vez de dejar el hero congelado o desmontar el árbol entero
    (el sitio no tiene ningún otro error boundary). El remonte por key al
    cambiar de idioma también resetea el estado de error. */
 class TypewriterBoundary extends Component<
-  { text: string; children: ReactNode },
+  { titles: string[]; children: ReactNode },
   { failed: boolean }
 > {
   state = { failed: false }
@@ -68,7 +70,9 @@ class TypewriterBoundary extends Component<
 
   render() {
     if (this.state.failed) {
-      return <p className="font-mono text-lg text-accent sm:text-xl">{this.props.text}</p>
+      return (
+        <p className="font-mono text-lg text-accent sm:text-xl">{this.props.titles.join(' · ')}</p>
+      )
     }
     return this.props.children
   }
@@ -102,13 +106,13 @@ export function Hero({ content }: HeroProps) {
             className="hero-glow pointer-events-none absolute -inset-x-24 -inset-y-16 -z-10"
           />
           <p className="font-mono text-xs tracking-[0.2em] text-muted sm:text-sm">{hero.eyebrow}</p>
-          <h1 className="gradient-name font-display text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          <h1 className="font-display text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
             {hero.name}
           </h1>
 
-          {/* key: reinicia el tipeo cuando cambia el texto (p. ej. al cambiar de idioma). */}
-          <TypewriterBoundary key={hero.tagline} text={hero.tagline}>
-            <TypewriterLine text={hero.tagline} />
+          {/* key: reinicia el ciclo cuando cambian los títulos (p. ej. al cambiar de idioma). */}
+          <TypewriterBoundary key={hero.taglines.join('|')} titles={hero.taglines}>
+            <TypewriterLine titles={hero.taglines} />
           </TypewriterBoundary>
 
           <p className="max-w-xl text-base text-muted sm:text-lg">{hero.valueProp}</p>
