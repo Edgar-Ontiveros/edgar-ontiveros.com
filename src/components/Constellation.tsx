@@ -52,9 +52,9 @@ const LABEL_FADE_RATE = 8 // 1/s
 const FOCUS_DIM = 0.55 // atenuación del resto con un nodo activo
 
 // ── Atenuación gradual tras el bloque de texto del hero ──
-const ZONE_MIN_FADE = 0.22 // opacidad mínima en el centro de la zona
+const ZONE_MIN_FADE = 0.4 // opacidad mínima en el interior de la zona (~40% de la normal)
 const ZONE_FEATHER = 90 // px de transición suave en los bordes
-const ZONE_PADDING = 12
+const ZONE_PADDING = 6 // margen ceñido alrededor del rect medido del texto
 
 interface ConstellationNode {
   label: string
