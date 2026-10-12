@@ -16,6 +16,7 @@ export function Header({ content, onToggleLanguage }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
   const activeId = useActiveSection(SECTION_IDS)
   const { nav, ui } = content
 
@@ -26,8 +27,9 @@ export function Header({ content, onToggleLanguage }: HeaderProps) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Menú móvil abierto: cierra con Esc, bloquea el scroll del body y deja el
-  // contenido principal inerte para que el foco no escape al contenido tapado.
+  // Menú móvil abierto: cierra con Esc, bloquea el scroll del body y deja
+  // inerte todo lo que no es el header (main y footer) para que el foco no
+  // escape al contenido tapado por el panel.
   // Si el viewport cruza a >=768px (rotación, resize), el overlay y la
   // hamburguesa desaparecen por CSS: hay que cerrar el menú para no dejar la
   // página bloqueada sin ningún control visible.
@@ -50,27 +52,35 @@ export function Header({ content, onToggleLanguage }: HeaderProps) {
     document.addEventListener('keydown', onKeyDown)
     desktopQuery.addEventListener('change', onBreakpointChange)
     document.body.style.overflow = 'hidden'
-    const main = document.getElementById('content')
-    main?.setAttribute('inert', '')
+    const header = headerRef.current
+    const covered = Array.from(header?.parentElement?.children ?? []).filter(
+      (element) => element !== header,
+    )
+    covered.forEach((element) => element.setAttribute('inert', ''))
     return () => {
       document.removeEventListener('keydown', onKeyDown)
       desktopQuery.removeEventListener('change', onBreakpointChange)
       document.body.style.overflow = ''
-      main?.removeAttribute('inert')
+      covered.forEach((element) => element.removeAttribute('inert'))
     }
   }, [menuOpen])
 
   // Header "glass" al hacer scroll: fondo translúcido (token --bg-glass,
   // contraste documentado en theme.css) + backdrop-blur + borde inferior,
   // con transición de 200 ms; arriba del todo vuelve a su estado plano
-  // (transparente sobre el hero).
+  // (transparente sobre el hero). Con el menú móvil abierto el header va
+  // opaco y SIN backdrop-filter: ese filtro convierte al header en containing
+  // block de sus descendientes fixed y el panel quedaría con altura 0.
+  const surfaceClasses = menuOpen
+    ? 'border-border bg-background'
+    : scrolled
+      ? 'border-border bg-glass backdrop-blur-md'
+      : 'border-transparent bg-transparent'
+
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 border-b transition-[background-color,border-color] duration-200 motion-reduce:transition-none ${
-        scrolled || menuOpen
-          ? 'border-border bg-glass backdrop-blur-md'
-          : 'border-transparent bg-transparent'
-      }`}
+      ref={headerRef}
+      className={`fixed inset-x-0 top-0 z-40 border-b transition-[background-color,border-color] duration-200 motion-reduce:transition-none ${surfaceClasses}`}
     >
       <a
         href="#content"

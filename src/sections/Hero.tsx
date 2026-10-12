@@ -84,7 +84,13 @@ export function Hero({ content }: HeroProps) {
   const textBlockRef = useRef<HTMLDivElement>(null)
 
   return (
-    <section ref={sectionRef} className="relative flex min-h-svh flex-col justify-center">
+    // overflow-x-clip: el resplandor (-inset-x-24) sobresale del viewport en
+    // algunos anchos; se recorta solo en horizontal, sin crear contenedor de
+    // scroll ni tocar la constelación.
+    <section
+      ref={sectionRef}
+      className="relative flex min-h-svh flex-col justify-center overflow-x-clip"
+    >
       <div
         id="constellation-container"
         aria-hidden="true"
