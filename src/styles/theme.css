@@ -3,9 +3,8 @@
  * tipografía. Los componentes consumen estos tokens vía las utilidades Tailwind
  * mapeadas abajo; nunca valores hex sueltos.
  *
- * Temas: oscuro por defecto. `data-theme` en <html> fija la elección manual del
- * usuario; sin atributo, decide `prefers-color-scheme`. Los dos bloques claros
- * (manual y sistema) deben mantenerse idénticos.
+ * El sitio es solo de tema oscuro: no hay variante clara ni se consulta
+ * `prefers-color-scheme`.
  */
 
 :root {
@@ -19,45 +18,15 @@
   --border: #263349;
 }
 
-/* Tema claro — elección manual */
-:root[data-theme='light'] {
-  color-scheme: light;
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --text: #0f172a;
-  --text-muted: #475569; /* 7.2:1 sobre --bg, 7.6:1 sobre --surface (AA) */
-  --accent: #0e7490; /* #22d3ee da 1.7:1 sobre --bg; oscurecido a 5.1:1 (AA) */
-  --accent-2: #b45309; /* #f59e0b da 2.1:1 sobre --bg; oscurecido a 4.8:1 (AA) */
-  --border: #e2e8f0;
-}
-
-/* Tema claro — preferencia del sistema sin elección manual (espejo del bloque anterior) */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark']) {
-    color-scheme: light;
-    --bg: #f8fafc;
-    --surface: #ffffff;
-    --text: #0f172a;
-    --text-muted: #475569;
-    --accent: #0e7490;
-    --accent-2: #b45309;
-    --border: #e2e8f0;
-  }
-}
-
 /* Tokens derivados: se definen una sola vez con color-mix() sobre los tokens
-   base, así siguen automáticamente al tema activo (claro u oscuro).
+   base.
    --bg-glass: header translúcido al hacer scroll. Contraste del texto del
-     header sobre el vidrio con el PEOR contenido posible debajo (blanco puro
-     bajo el tema oscuro, negro puro bajo el claro), al 85 %:
-       oscuro: --text 10.6:1 · --text-muted 5.0:1 · --accent 7.1:1
-       claro:  --text 12.0:1 · --text-muted 5.1:1
-     (al 70 % --text-muted daba 2.9:1 y 3.4:1: por eso el 85 %). Sobre las
-     superficies reales del sitio (--bg, --surface, blanco) todo queda ≥ 4.5:1;
-     --accent en tema claro baja a 3.9:1 solo si pasa por debajo una zona
-     grande azul marino de una captura.
+     header sobre el vidrio con el PEOR contenido posible debajo (blanco puro),
+     al 85 %: --text 10.6:1 · --text-muted 5.0:1 · --accent 7.1:1 (al 70 %
+     --text-muted daba 2.9:1: por eso el 85 %). Sobre las superficies reales
+     del sitio (--bg, --surface, blanco) todo queda ≥ 4.5:1.
    --accent-glow: acento al 8 % para el spotlight de tarjetas; sobre --bg deja
-     el texto en 14.1:1 / 6.6:1 (oscuro) y 15.3:1 / 6.5:1 (claro).
+     el texto en 14.1:1 / 6.6:1.
    --accent-glow-soft: acento al 2 % para el resplandor del hero, lo bastante
      tenue para que la constelación se vea nítida a través de él.
    --accent-shadow: sombra teñida de acento para el hover lift. */

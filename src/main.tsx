@@ -9,6 +9,16 @@ import '@fontsource-variable/jetbrains-mono'
 import './index.css'
 import App from './App.tsx'
 
+// Versiones anteriores guardaban tema ('theme') e idioma ('lang') en
+// localStorage. El sitio ahora es solo oscuro y siempre arranca en inglés:
+// se descartan para no dejar datos huérfanos de visitas previas.
+try {
+  localStorage.removeItem('theme')
+  localStorage.removeItem('lang')
+} catch {
+  /* localStorage no disponible (modo privado, permisos): nada que limpiar */
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

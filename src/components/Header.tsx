@@ -3,19 +3,16 @@ import { site } from '../content/site'
 import { SECTION_IDS } from '../content/types'
 import type { SiteContent } from '../content/types'
 import { useActiveSection } from '../hooks/useActiveSection'
-import type { Theme } from '../hooks/useTheme'
-import { CloseIcon, MenuIcon, MoonIcon, SunIcon } from './icons'
+import { CloseIcon, MenuIcon } from './icons'
 
 interface HeaderProps {
   content: SiteContent
-  theme: Theme
-  onToggleTheme: () => void
   onToggleLanguage: () => void
 }
 
 const controlClasses = 'rounded-md p-2 text-muted transition-colors hover:text-foreground'
 
-export function Header({ content, theme, onToggleTheme, onToggleLanguage }: HeaderProps) {
+export function Header({ content, onToggleLanguage }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
@@ -119,14 +116,6 @@ export function Header({ content, theme, onToggleTheme, onToggleLanguage }: Head
             className={`${controlClasses} font-mono text-sm`}
           >
             {ui.languageToggle.code}
-          </button>
-          <button
-            type="button"
-            onClick={onToggleTheme}
-            aria-label={theme === 'dark' ? ui.themeToggle.toLight : ui.themeToggle.toDark}
-            className={controlClasses}
-          >
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
           <button
             ref={menuButtonRef}

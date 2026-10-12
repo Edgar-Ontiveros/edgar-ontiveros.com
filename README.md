@@ -1,7 +1,8 @@
 # edgar-ontiveros.com
 
 Portafolio personal one-page — tema "Constelación". React 19 + TypeScript +
-Vite + Tailwind CSS v4, bilingüe EN/ES, tema oscuro/claro.
+Vite + Tailwind CSS v4, bilingüe EN/ES (siempre arranca en inglés), solo tema
+oscuro.
 
 ## Desarrollo
 
@@ -35,15 +36,18 @@ La estructura y el contenido del sitio están documentados en
 - `public/_headers` define las cabeceras de seguridad (incl. CSP) y la
   política de caché: assets con hash de Vite inmutables por un año,
   `index.html` sin caché para que los deploys se reflejen al instante.
-- **CSP**: el `script-src` autoriza el script inline de tema/idioma de
-  `index.html` por hash SHA-256. Si ese script cambia (¡incluido un
-  reformateo!), hay que recalcular el hash tras `npm run build`:
+- **CSP**: `index.html` no tiene scripts inline ejecutables (el bloque
+  `application/ld+json` es de datos y la CSP no lo bloquea), así que el
+  `script-src` es solo `'self'`. Si en el futuro se agrega un script inline,
+  hay que autorizarlo por hash SHA-256, calculado tras `npm run build` (y
+  recalculado ante cualquier cambio, ¡incluido un reformateo!):
 
   ```bash
   python3 -c "import hashlib,re,base64; s=re.search(r'<script>(.*?)</script>', open('dist/index.html').read(), re.S).group(1); print('sha256-'+base64.b64encode(hashlib.sha256(s.encode()).digest()).decode())"
   ```
 
-  y reemplazarlo en `public/_headers`.
+  y agregarlo al `script-src` de `public/_headers`. El `img-src` admite
+  `data:` por los placeholders blur-up de Projects (data URIs inline).
 
 ## Regeneración de assets
 

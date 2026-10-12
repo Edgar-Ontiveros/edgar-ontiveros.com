@@ -9,7 +9,7 @@ Copy del sitio en inglés (idioma default); la versión ES se genera como espejo
 
 - Izquierda: monograma `EO·` en mono cian (favicon usa el mismo).
 - Nav por anclas: About · Stack · Experience · Projects · Education · Research · Contact.
-- Extremo derecho: toggle **EN/ES** + toggle **claro/oscuro**.
+- Extremo derecho: toggle **EN/ES** (el sitio es solo de tema oscuro).
 - Comportamiento: transparente sobre el hero; con scroll toma fondo `#0A0E1A` translúcido con borde inferior sutil. Ancla activa en cian. Móvil: menú de pantalla completa.
 
 ## 1 · Hero
@@ -136,9 +136,9 @@ Pipeline: los originales viven en `raw-assets/`; el build genera versiones optim
 
 ## Transversal (calidad profesional)
 
-- **i18n**: EN default con auto-detección de navegador; toggle ES persistido; `content/en.ts` + `content/es.ts` con el mismo type — TypeScript obliga a mantener ambos completos.
-- **Temas**: oscuro default (Constelación) + claro espejo; `prefers-color-scheme` + toggle.
-- **Accesibilidad WCAG AA**: contraste verificado en ambos temas, foco visible, navegación por teclado, alt text en todas las imágenes, `prefers-reduced-motion` respetado (grafo estático, sin typewriter en loop).
+- **i18n**: siempre arranca en EN (sin auto-detección ni persistencia); toggle ES durante la visita; `content/en.ts` + `content/es.ts` con el mismo type — TypeScript obliga a mantener ambos completos.
+- **Tema**: solo oscuro (Constelación); sin variante clara ni `prefers-color-scheme`.
+- **Accesibilidad WCAG AA**: contraste verificado, foco visible, navegación por teclado, alt text en todas las imágenes, `prefers-reduced-motion` respetado (grafo estático, sin typewriter en loop).
 - **SEO / compartibilidad**: `<title>` "Edgar Ontiveros — Machine Learning Engineer / Developer", meta description, Open Graph + Twitter Card con og-image propia (1200×630 con la constelación), favicon monograma, sitemap y robots.
 - **Performance**: imágenes en WebP con lazy loading, fuentes self-hosted con subset y `font-display: swap`, canvas pausado fuera del viewport y en pestañas inactivas. Objetivo Lighthouse 90+ móvil.
 

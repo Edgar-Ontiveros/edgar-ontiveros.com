@@ -2,43 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      // Fija tema e idioma antes del primer paint para evitar un flash del tema
-      // incorrecto. Debe mantenerse en sincronía con useTheme y useLanguage.
-      ;(function () {
-        var theme = null
-        var lang = null
-        try {
-          theme = localStorage.getItem('theme')
-          lang = localStorage.getItem('lang')
-        } catch (e) {
-          /* localStorage no disponible: solo auto-detección */
-        }
-        if (theme === 'light' || theme === 'dark') {
-          document.documentElement.dataset.theme = theme
-        }
-        if (lang !== 'en' && lang !== 'es') {
-          lang = /^es(-|$)/i.test(navigator.language) ? 'es' : 'en'
-        }
-        document.documentElement.lang = lang
-      })()
-    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- SEO. Copy en inglés: es el idioma default del sitio y el que sirve al
-         mercado objetivo (reclutadores internacionales vía LinkedIn); la
-         auto-detección de idioma corre en cliente y los crawlers no la
-         ejecutan, así que estas etiquetas estáticas son la única versión que
-         ven los previsualizadores. -->
+    <!-- SEO. Copy en inglés: el sitio siempre arranca en inglés (el idioma
+         del mercado objetivo, reclutadores internacionales vía LinkedIn); el
+         cambio a español corre en cliente y los crawlers no lo ejecutan, así
+         que estas etiquetas estáticas son la única versión que ven los
+         previsualizadores. -->
     <title>Edgar Ontiveros — Machine Learning Engineer / Developer</title>
     <meta
       name="description"
       content="Edgar Ontiveros, machine learning engineer and developer in Chihuahua, MX. I take systems from idea to production — the API, the data model, the interface, and the deploy."
     />
     <link rel="canonical" href="https://edgar-ontiveros.com/" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0e1a" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc" />
+    <meta name="theme-color" content="#0a0e1a" />
 
     <!-- Open Graph (og-image.png se regenera con scripts/generate_og_image.sh) -->
     <meta property="og:type" content="website" />

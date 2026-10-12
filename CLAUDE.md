@@ -1,7 +1,7 @@
 # edgar-ontiveros.com
 
-Portafolio personal one-page (tema "Constelación"), bilingüe EN/ES con tema
-oscuro (default) y claro. La estructura y el copy completo del sitio viven en
+Portafolio personal one-page (tema "Constelación"), bilingüe EN/ES (siempre
+arranca en inglés) y solo con tema oscuro. La estructura y el copy completo del sitio viven en
 `docs/estructura-portfolio.md` — consultarla antes de construir cualquier
 sección.
 
@@ -18,14 +18,14 @@ sección.
 - `src/content/` — TODO el texto visible del sitio (`types.ts` define
   `SiteContent`; `en.ts` y `es.ts` lo implementan, el type obliga a mantener
   ambos idiomas completos).
-- `src/styles/theme.css` — design tokens: colores por tema (CSS variables),
+- `src/styles/theme.css` — design tokens: colores del tema oscuro (CSS variables),
   fuentes y su mapeo a utilidades Tailwind (`bg-background`, `bg-surface`,
   `text-foreground`, `text-muted`, `text-accent`, `text-accent-2`,
   `border-border`, `font-display`, `font-sans`, `font-mono`).
-- `src/hooks/` — `useTheme` (atributo `data-theme` en `<html>` + localStorage;
-  default sigue `prefers-color-scheme`) y `useLanguage` (auto-detección,
-  localStorage, `<html lang>`). `index.html` tiene un script inline que aplica
-  tema e idioma antes del primer paint — mantenerlo en sincronía con los hooks.
+- `src/hooks/` — `useLanguage`: cada visita arranca en inglés (sin detección
+  del navegador ni localStorage); el toggle EN/ES cambia el idioma solo durante
+  la visita y sincroniza `<html lang>`. `index.html` no tiene scripts inline
+  (la CSP de `public/_headers` usa `script-src 'self'`).
 - `src/components/` — componentes reutilizables; `src/sections/` — secciones
   del one-page.
 - `raw-assets/` — material fuente LOCAL, **no versionado** (está en
@@ -40,7 +40,7 @@ sección.
 - TypeScript estricto; `npm run build` corre `tsc -b` antes de Vite.
 - Todo el texto del sitio vive SOLO en `src/content`, nunca hardcodeado en
   componentes.
-- Accesibilidad WCAG AA obligatoria: contraste verificado en ambos temas
+- Accesibilidad WCAG AA obligatoria: contraste verificado
   (ratios documentados en `theme.css`), foco visible, navegación por teclado y
   `prefers-reduced-motion` respetado en toda animación.
 - Toda imagen lleva `alt`.

@@ -165,10 +165,6 @@ export interface SiteContent {
     tagline: string
   }
   ui: {
-    themeToggle: {
-      toLight: string
-      toDark: string
-    }
     languageToggle: {
       /** Nombre accesible del botón, escrito en el idioma destino. */
       label: string

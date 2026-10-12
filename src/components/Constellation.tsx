@@ -3,7 +3,6 @@ import type { RefObject } from 'react'
 import { CONSTELLATION_TECHNOLOGIES } from '../content/constellation'
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
-const LIGHT_SCHEME_QUERY = '(prefers-color-scheme: light)'
 // Mismo criterio que el breakpoint md: de Tailwind, para que el motor y el
 // layout CSS conmuten en el mismo punto (rect.width excluye la scrollbar).
 const DESKTOP_QUERY = '(min-width: 768px)'
@@ -86,21 +85,14 @@ interface ThemeStyle {
   accent: string
   muted: string
   fontMono: string
-  /** Atenúa solo los elementos ambientales en tema claro; los estados de
-      hover se dibujan a opacidad plena (los tokens ya vienen calibrados). */
-  dim: number
 }
 
 function readThemeStyle(): ThemeStyle {
   const styles = getComputedStyle(document.documentElement)
-  const manual = document.documentElement.dataset.theme
-  const light =
-    manual === 'light' || (manual !== 'dark' && window.matchMedia(LIGHT_SCHEME_QUERY).matches)
   return {
     accent: styles.getPropertyValue('--accent').trim(),
     muted: styles.getPropertyValue('--text-muted').trim(),
     fontMono: styles.getPropertyValue('--font-mono').trim(),
-    dim: light ? 0.75 : 1,
   }
 }
 
@@ -137,7 +129,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       return
     }
 
-    let theme = readThemeStyle()
+    const theme = readThemeStyle()
     let width = 0
     let height = 0
     let linkDistance = LINK_DISTANCE_MIN
@@ -248,7 +240,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height)
-      const { accent, muted, fontMono, dim } = theme
+      const { accent, muted, fontMono } = theme
 
       let maxT = 0
       for (const node of nodes) {
@@ -275,7 +267,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           const closeness = 1 - distance / linkDistance
           const fade = Math.min(a.fade, b.fade)
           ctx.strokeStyle = muted
-          ctx.globalAlpha = dim * LINK_ALPHA * closeness * fade * (1 - FOCUS_DIM * maxT)
+          ctx.globalAlpha = LINK_ALPHA * closeness * fade * (1 - FOCUS_DIM * maxT)
           ctx.beginPath()
           ctx.moveTo(a.x + a.ox, a.y + a.oy)
           ctx.lineTo(b.x + b.ox, b.y + b.oy)
@@ -303,7 +295,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           ctx.arc(x, y, HALO_RADIUS, 0, Math.PI * 2)
           ctx.fill()
         }
-        const base = dim * node.baseAlpha * node.fade * (1 - FOCUS_DIM * maxT * (1 - node.t))
+        const base = node.baseAlpha * node.fade * (1 - FOCUS_DIM * maxT * (1 - node.t))
         ctx.globalAlpha = Math.max(base, node.t * Math.max(node.fade, 0.6))
         ctx.beginPath()
         ctx.arc(x, y, node.radius + HOVER_RADIUS_BOOST * node.t, 0, Math.PI * 2)
@@ -517,25 +509,6 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     })
     resizeObserver.observe(host)
 
-    const themeObserver = new MutationObserver(() => {
-      theme = readThemeStyle()
-      if (!running) {
-        draw()
-      }
-    })
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    })
-    const schemeQuery = window.matchMedia(LIGHT_SCHEME_QUERY)
-    const onSchemeChange = () => {
-      theme = readThemeStyle()
-      if (!running) {
-        draw()
-      }
-    }
-    schemeQuery.addEventListener('change', onSchemeChange)
-
     // En modo estático (reduced-motion) el hover/tap sigue funcionando: no es
     // animación. Se redibuja una sola vez por cambio, sin fade (t se fija).
     const applyStaticHighlight = (found: number) => {
@@ -613,9 +586,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       stop()
       window.clearTimeout(resizeTimer)
       resizeObserver.disconnect()
-      themeObserver.disconnect()
       intersectionObserver?.disconnect()
-      schemeQuery.removeEventListener('change', onSchemeChange)
       document.removeEventListener('visibilitychange', onVisibilityChange)
       host.removeEventListener('pointermove', onPointerMove)
       host.removeEventListener('pointerleave', onPointerLeave)

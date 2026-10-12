@@ -57,17 +57,3 @@
     background: radial-gradient(ellipse at center, var(--accent-glow-soft), transparent 60%);
   }
 }
-
-/* Transición de tema: useTheme pone .theme-transition en <html> SOLO al
-   alternar el tema (nunca en la carga inicial) y la quita al terminar. Sin
-   capa para ganar a las utilidades; img y canvas quedan fuera (la rotación
-   de miniaturas conserva su propio crossfade). */
-@media (prefers-reduced-motion: no-preference) {
-  html.theme-transition,
-  html.theme-transition *:not(img, canvas) {
-    transition:
-      background-color 200ms ease-out,
-      color 200ms ease-out,
-      border-color 200ms ease-out;
-  }
-}

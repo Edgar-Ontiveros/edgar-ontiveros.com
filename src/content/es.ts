@@ -297,10 +297,6 @@ export const es: SiteContent = {
     tagline: 'Construido con React + Vite · Desplegado en Cloudflare Pages',
   },
   ui: {
-    themeToggle: {
-      toLight: 'Cambiar a tema claro',
-      toDark: 'Cambiar a tema oscuro',
-    },
     languageToggle: {
       label: 'Switch to English',
       code: 'EN',

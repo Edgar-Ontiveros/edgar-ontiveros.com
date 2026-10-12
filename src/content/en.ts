@@ -301,10 +301,6 @@ export const en: SiteContent = {
     tagline: 'Built with React + Vite · Deployed on Cloudflare Pages',
   },
   ui: {
-    themeToggle: {
-      toLight: 'Switch to light theme',
-      toDark: 'Switch to dark theme',
-    },
     languageToggle: {
       label: 'Cambiar a español',
       code: 'ES',
