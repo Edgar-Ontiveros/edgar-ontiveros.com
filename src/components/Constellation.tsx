@@ -18,38 +18,19 @@ const MAX_NODES = Math.round(140 * DENSITY_SCALE) // 168
 /** Re-siembra solo si el objetivo difiere >15% del actual (evita pops al redimensionar). */
 const RESEED_TOLERANCE = 0.15
 
-// ── Nodos: tamaño y brillo crecen con la profundidad z (0 = lejos, 1 = cerca) ──
-const NODE_RADIUS_MIN = 0.9 // radio en z = 0
-const NODE_RADIUS_MAX = 2.6 // radio en z = 1
-const NODE_ALPHA_MIN = 0.35 // brillo en z = 0
-const NODE_ALPHA_MAX = 0.95 // brillo en z = 1
+// ── Nodos (pequeños, con variación sutil para dar profundidad) ──
+const NODE_RADIUS_MIN = 1.2
+const NODE_RADIUS_MAX = 2.2
+const NODE_ALPHA_MIN = 0.45
+const NODE_ALPHA_MAX = 0.9
 const HOVER_RADIUS_BOOST = 2
 const HALO_RADIUS = 8
-
-// ── Profundidad (pseudo-3D) ──
-/** Exponente de la distribución de z: >1 hay más nodos lejanos que cercanos. */
-const DEPTH_DISTRIBUTION = 1.1
-/** Niveles de z cuantizados: un sprite pre-renderizado (radial-gradient) por nivel. */
-const DEPTH_LEVELS = 12
-/** Desenfoque (bokeh) en px en z = 0; se anula al llegar a DEPTH_BLUR_END. */
-const DEPTH_BLUR_MAX = 1.4
-const DEPTH_BLUR_END = 0.5
-/** Halo suave del acento en los nodos cercanos: aparece desde DEPTH_GLOW_START. */
-const DEPTH_GLOW_START = 0.6
-const DEPTH_GLOW_RADIUS = 6 // px más allá del núcleo en z = 1
-const DEPTH_GLOW_ALPHA = 0.35 // opacidad del halo en z = 1 (relativa al núcleo)
 
 // ── Enlaces por proximidad ──
 const LINK_ALPHA = 0.3
 const LINK_DISTANCE_FACTOR = 1.2 // × espaciado medio entre nodos
 const LINK_DISTANCE_MIN = 80
 const LINK_DISTANCE_MAX = 150
-/** Grosor y opacidad según la profundidad media de los extremos. */
-const LINK_WIDTH_MIN = 0.6
-const LINK_WIDTH_MAX = 1.4
-const LINK_DEPTH_ALPHA_MIN = 0.5 // factor de opacidad en profundidad media 0
-/** Prioriza capas: con |Δz| = 1 el enlace exige estar (1 + P)× más cerca. */
-const LINK_DEPTH_PENALTY = 0.5
 
 // ── Movimiento (drift orgánico, guiado suave en los bordes) ──
 const EDGE_MARGIN = 8
@@ -61,11 +42,6 @@ const MAX_SPEED = 16
 const WANDER = 6 // px/s² de deriva orgánica
 const PULL_RADIUS = 180
 const MAX_PULL = 10
-/** Parallax del cursor y velocidad de deriva escalan con z (lo cercano se mueve más). */
-const PARALLAX_DEPTH_MIN = 0.25
-const PARALLAX_DEPTH_MAX = 1.4
-const DRIFT_DEPTH_MIN = 0.45
-const DRIFT_DEPTH_MAX = 1.35
 
 // ── Interacción y labels (solo visibles en hover/tap, con fade) ──
 const HIT_RADIUS = 26
@@ -78,12 +54,6 @@ const FOCUS_DIM = 0.55 // atenuación del resto con un nodo activo
 const ZONE_MIN_FADE = 0.4 // opacidad mínima en el interior de la zona (~40% de la normal)
 const ZONE_FEATHER = 90 // px de transición suave en los bordes
 const ZONE_PADDING = 6 // margen ceñido alrededor del rect medido del texto
-// En móvil la zona del texto no aplica (cubriría casi todo el hero): solo una
-// atenuación ligera alrededor del nombre, para que los nodos cercanos con halo
-// no compitan con él.
-const NAME_ZONE_MIN_FADE = 0.6
-const NAME_ZONE_FEATHER = 36
-const NAME_ZONE_PADDING = 18
 
 interface ConstellationNode {
   label: string
@@ -94,13 +64,6 @@ interface ConstellationNode {
   /** Offset de parallax hacia el cursor (no altera la física del drift). */
   ox: number
   oy: number
-  /** Profundidad 0 (lejos) .. 1 (cerca); fija desde la siembra. */
-  z: number
-  /** Índice del sprite de profundidad (z cuantizado). */
-  level: number
-  /** Factores de parallax y de deriva derivados de z. */
-  parallax: number
-  drift: number
   radius: number
   baseAlpha: number
   /** Fase del wander, para que cada nodo derive distinto. */
@@ -116,9 +79,6 @@ interface ExclusionZone {
   y0: number
   x1: number
   y1: number
-  /** Opacidad mínima en el interior y ancho de la transición. */
-  minFade: number
-  feather: number
 }
 
 interface ThemeStyle {
@@ -137,71 +97,11 @@ function readThemeStyle(): ThemeStyle {
 }
 
 const clamp = (min: number, max: number, value: number) => Math.min(max, Math.max(min, value))
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-const smoothstep = (edge0: number, edge1: number, value: number) => {
-  const t = clamp(0, 1, (value - edge0) / (edge1 - edge0))
-  return t * t * (3 - 2 * t)
-}
-
-interface DepthSprite {
-  canvas: HTMLCanvasElement
-  /** Semilado en px CSS: el sprite se dibuja centrado en el nodo. */
-  extent: number
-}
-
-/**
- * Pre-renderiza un sprite por nivel de profundidad (una sola vez por DPR):
- * los lejanos son discos suaves y desenfocados (bokeh), los cercanos un núcleo
- * nítido con halo del acento. Se pinta una máscara radial y se tiñe con el
- * color del token (source-in), así no hay colores fuera del tema.
- */
-function buildDepthSprites(accent: string, dpr: number): DepthSprite[] {
-  return Array.from({ length: DEPTH_LEVELS }, (_, level) => {
-    const z = level / (DEPTH_LEVELS - 1)
-    const radius = lerp(NODE_RADIUS_MIN, NODE_RADIUS_MAX, z)
-    const blur = DEPTH_BLUR_MAX * (1 - smoothstep(0, DEPTH_BLUR_END, z))
-    const glow = smoothstep(DEPTH_GLOW_START, 1, z)
-    const edge = Math.max(blur, 0.6) // borde suave mínimo como antialiasing
-    const extent = radius + edge + DEPTH_GLOW_RADIUS * glow
-    // El desenfoque reparte la luz: el pico baja para conservar el "peso" del punto.
-    const peak = radius / (radius + blur * 0.5)
-
-    const canvas = document.createElement('canvas')
-    const size = Math.ceil(extent * 2 * dpr)
-    canvas.width = size
-    canvas.height = size
-    const sctx = canvas.getContext('2d')
-    if (!sctx) {
-      return { canvas, extent }
-    }
-    const center = size / 2
-    const gradient = sctx.createRadialGradient(center, center, 0, center, center, center)
-    const stop = (r: number, alpha: number) =>
-      gradient.addColorStop(clamp(0, 1, r / extent), `rgb(0 0 0 / ${alpha})`)
-    stop(0, peak)
-    stop(Math.max(0, radius - edge * 0.5), peak)
-    if (glow > 0) {
-      const glowAlpha = DEPTH_GLOW_ALPHA * glow
-      stop(radius + edge * 0.5, glowAlpha)
-      stop(radius + edge + DEPTH_GLOW_RADIUS * glow * 0.4, glowAlpha * 0.4)
-    } else {
-      stop(radius, peak * 0.55)
-    }
-    stop(extent, 0)
-    sctx.fillStyle = gradient
-    sctx.fillRect(0, 0, size, size)
-    // Tinte con el acento del tema conservando la máscara.
-    sctx.globalCompositeOperation = 'source-in'
-    sctx.fillStyle = accent
-    sctx.fillRect(0, 0, size, size)
-    return { canvas, extent }
-  })
-}
 
 interface ConstellationProps {
   /** Elemento que recibe los eventos de puntero (el canvas es pointer-events: none). */
   hostRef: RefObject<HTMLElement | null>
-  /** Bloque de texto del hero: define la zona de atenuación (en móvil, solo su h1). */
+  /** Bloque de texto del hero: define la zona de atenuación en desktop. */
   textRef: RefObject<HTMLDivElement | null>
 }
 
@@ -235,8 +135,6 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     let linkDistance = LINK_DISTANCE_MIN
     let zone: ExclusionZone | null = null
     let nodes: ConstellationNode[] = []
-    let sprites: DepthSprite[] = []
-    let spriteDpr = 0
     let hoveredIndex = -1
     let touchIndex = -1
     let touchUntil = 0
@@ -250,7 +148,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
     let disposed = false
 
     // Atenuación gradual dentro de la zona del texto: 1 fuera, baja con
-    // smoothstep hasta zone.minFade en el interior profundo.
+    // smoothstep hasta ZONE_MIN_FADE en el interior profundo.
     const zoneFade = (x: number, y: number) => {
       if (!zone) {
         return 1
@@ -259,30 +157,16 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       if (depth <= 0) {
         return 1
       }
-      const step = Math.min(1, depth / zone.feather)
+      const step = Math.min(1, depth / ZONE_FEATHER)
       const smooth = step * step * (3 - 2 * step)
-      return 1 - (1 - zone.minFade) * smooth
+      return 1 - (1 - ZONE_MIN_FADE) * smooth
     }
 
     // Zona medida del rect real del bloque de texto (sus hijos encogen a su
-    // contenido con items-start), con fallback por fracciones. En móvil, solo
-    // la zona ligera alrededor del nombre (h1 del bloque).
+    // contenido con items-start), con fallback por fracciones.
     const measureZone = (): ExclusionZone | null => {
       if (!window.matchMedia(DESKTOP_QUERY).matches) {
-        const name = textRef.current?.querySelector('h1')
-        if (!name) {
-          return null
-        }
-        const canvasRect = canvas.getBoundingClientRect()
-        const rect = name.getBoundingClientRect()
-        return {
-          x0: rect.left - canvasRect.left - NAME_ZONE_PADDING,
-          y0: rect.top - canvasRect.top - NAME_ZONE_PADDING,
-          x1: rect.right - canvasRect.left + NAME_ZONE_PADDING,
-          y1: rect.bottom - canvasRect.top + NAME_ZONE_PADDING,
-          minFade: NAME_ZONE_MIN_FADE,
-          feather: NAME_ZONE_FEATHER,
-        }
+        return null
       }
       const textBlock = textRef.current
       if (textBlock && textBlock.children.length > 0) {
@@ -304,19 +188,10 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
             y0: top - canvasRect.top - ZONE_PADDING,
             x1: right - canvasRect.left + ZONE_PADDING,
             y1: bottom - canvasRect.top + ZONE_PADDING,
-            minFade: ZONE_MIN_FADE,
-            feather: ZONE_FEATHER,
           }
         }
       }
-      return {
-        x0: 0,
-        y0: height * 0.24,
-        x1: width * 0.52,
-        y1: height * 0.78,
-        minFade: ZONE_MIN_FADE,
-        feather: ZONE_FEATHER,
-      }
+      return { x0: 0, y0: height * 0.24, x1: width * 0.52, y1: height * 0.78 }
     }
 
     const seedNodes = (target: number) => {
@@ -332,8 +207,6 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       nodes = Array.from({ length: target }, (_, index) => {
         const angle = Math.random() * Math.PI * 2
         const speed = MIN_SPEED + Math.random() * DRIFT_SPEED
-        const level = Math.round(Math.random() ** DEPTH_DISTRIBUTION * (DEPTH_LEVELS - 1))
-        const z = level / (DEPTH_LEVELS - 1)
         return {
           label: vocabulary[index % vocabulary.length],
           x: EDGE_MARGIN + Math.random() * Math.max(1, width - EDGE_MARGIN * 2),
@@ -342,19 +215,13 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           vy: Math.sin(angle) * speed,
           ox: 0,
           oy: 0,
-          z,
-          level,
-          parallax: lerp(PARALLAX_DEPTH_MIN, PARALLAX_DEPTH_MAX, z),
-          drift: lerp(DRIFT_DEPTH_MIN, DRIFT_DEPTH_MAX, z),
-          radius: lerp(NODE_RADIUS_MIN, NODE_RADIUS_MAX, z),
-          baseAlpha: lerp(NODE_ALPHA_MIN, NODE_ALPHA_MAX, z),
+          radius: NODE_RADIUS_MIN + Math.random() * (NODE_RADIUS_MAX - NODE_RADIUS_MIN),
+          baseAlpha: NODE_ALPHA_MIN + Math.random() * (NODE_ALPHA_MAX - NODE_ALPHA_MIN),
           phase: Math.random() * Math.PI * 2,
           t: 0,
           fade: 1,
         }
       })
-      // De lejos a cerca: los nodos cercanos se pintan encima.
-      nodes.sort((a, b) => a.z - b.z)
     }
 
     const findNodeAt = (x: number, y: number, radius: number) => {
@@ -384,9 +251,8 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       }
 
       // Enlaces por proximidad: la red se teje y desteje conforme derivan.
-      // La diferencia de profundidad acorta el alcance (la red se lee en
-      // capas) y la profundidad media fija grosor y opacidad.
       const linkDistance2 = linkDistance * linkDistance
+      ctx.lineWidth = 1
       for (let i = 0; i < nodes.length; i += 1) {
         for (let j = i + 1; j < nodes.length; j += 1) {
           const a = nodes[i]
@@ -397,28 +263,17 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           if (d2 >= linkDistance2) {
             continue
           }
-          const distance = Math.sqrt(d2) * (1 + LINK_DEPTH_PENALTY * Math.abs(a.z - b.z))
-          if (distance >= linkDistance) {
-            continue
-          }
+          const distance = Math.sqrt(d2)
           const closeness = 1 - distance / linkDistance
           const fade = Math.min(a.fade, b.fade)
-          const depth = (a.z + b.z) / 2
-          ctx.lineWidth = lerp(LINK_WIDTH_MIN, LINK_WIDTH_MAX, depth)
           ctx.strokeStyle = muted
-          ctx.globalAlpha =
-            LINK_ALPHA *
-            closeness *
-            fade *
-            (1 - FOCUS_DIM * maxT) *
-            lerp(LINK_DEPTH_ALPHA_MIN, 1, depth)
+          ctx.globalAlpha = LINK_ALPHA * closeness * fade * (1 - FOCUS_DIM * maxT)
           ctx.beginPath()
           ctx.moveTo(a.x + a.ox, a.y + a.oy)
           ctx.lineTo(b.x + b.ox, b.y + b.oy)
           ctx.stroke()
           const highlight = Math.max(a.t, b.t)
           if (highlight > 0.01) {
-            ctx.lineWidth = Math.max(1, ctx.lineWidth)
             ctx.strokeStyle = accent
             ctx.globalAlpha = highlight * closeness * 0.9 * Math.max(fade, 0.5)
             ctx.beginPath()
@@ -429,36 +284,22 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
         }
       }
 
-      // Nodos: sprite de su profundidad (bokeh lejos, halo cerca). El activo
-      // pasa a un punto nítido a brillo pleno, sea cual sea su z.
+      // Nodos: puntos pequeños; el activo crece y sube a opacidad plena.
       ctx.fillStyle = accent
       for (const node of nodes) {
         const x = node.x + node.ox
         const y = node.y + node.oy
-        const base = node.baseAlpha * node.fade * (1 - FOCUS_DIM * maxT * (1 - node.t))
-        const sprite = sprites[node.level]
-        if (sprite && node.t < 0.99) {
-          ctx.globalAlpha = base * (1 - node.t)
-          ctx.drawImage(
-            sprite.canvas,
-            x - sprite.extent,
-            y - sprite.extent,
-            sprite.extent * 2,
-            sprite.extent * 2,
-          )
-        }
-        if (node.t > 0.01 || !sprite) {
+        if (node.t > 0.01) {
           ctx.globalAlpha = node.t * 0.18
           ctx.beginPath()
           ctx.arc(x, y, HALO_RADIUS, 0, Math.PI * 2)
           ctx.fill()
-          ctx.globalAlpha = sprite
-            ? node.t * Math.max(node.fade, 0.6)
-            : Math.max(base, node.t * Math.max(node.fade, 0.6))
-          ctx.beginPath()
-          ctx.arc(x, y, node.radius + HOVER_RADIUS_BOOST * node.t, 0, Math.PI * 2)
-          ctx.fill()
         }
+        const base = node.baseAlpha * node.fade * (1 - FOCUS_DIM * maxT * (1 - node.t))
+        ctx.globalAlpha = Math.max(base, node.t * Math.max(node.fade, 0.6))
+        ctx.beginPath()
+        ctx.arc(x, y, node.radius + HOVER_RADIUS_BOOST * node.t, 0, Math.PI * 2)
+        ctx.fill()
       }
 
       // Labels: solo nodos activos (o en fade), reposicionados si tocan un borde.
@@ -523,9 +364,8 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           node.vy *= MAX_SPEED / speed
         }
 
-        // La deriva escala con z: lo cercano avanza más rápido que lo lejano.
-        node.x += node.vx * node.drift * dt
-        node.y += node.vy * node.drift * dt
+        node.x += node.vx * dt
+        node.y += node.vy * dt
 
         // Red de seguridad: rebote amortiguado en el margen mínimo.
         if (node.x < EDGE_MARGIN) {
@@ -551,7 +391,7 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
           const dy = py - node.y
           const distance = Math.hypot(dx, dy)
           if (distance > 1 && distance < PULL_RADIUS) {
-            const pull = (1 - distance / PULL_RADIUS) * MAX_PULL * node.parallax
+            const pull = (1 - distance / PULL_RADIUS) * MAX_PULL
             targetOx = (dx / distance) * pull
             targetOy = (dy / distance) * pull
           }
@@ -627,11 +467,6 @@ export function Constellation({ hostRef, textRef }: ConstellationProps) {
       canvas.width = Math.max(1, Math.round(width * dpr))
       canvas.height = Math.max(1, Math.round(height * dpr))
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      // Sprites de profundidad: solo se regeneran si cambia el DPR.
-      if (dpr !== spriteDpr) {
-        sprites = buildDepthSprites(theme.accent, dpr)
-        spriteDpr = dpr
-      }
       zone = measureZone()
 
       const desktop = window.matchMedia(DESKTOP_QUERY).matches
