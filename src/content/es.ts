@@ -114,6 +114,8 @@ export const es: SiteContent = {
     internalTag: 'Proyecto interno',
     viewScreenshots: 'Ver capturas',
     viewRepo: 'Ver repositorio en GitHub',
+    demoLabel: 'App web',
+    viewDemo: 'Abrir app web',
     items: {
       'sales-reporting': {
         name: 'Sistema de Reporte de Ventas — SAP B1 HANA',

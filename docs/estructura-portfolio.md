@@ -74,7 +74,7 @@ Timeline vertical: línea con nodos cian, años grandes en mono, tags de stack p
 ## 5 · Projects — `04 · Production systems`
 
 - Subtítulo de sección: *"Systems currently running in production."*
-- Grid 2×2 (desktop). Cada tarjeta: screenshot con marco de navegador estilizado, nombre, 2 líneas problema→solución, chips y link a GitHub.
+- Grid 2×2 (desktop). Cada tarjeta: screenshot con marco de navegador estilizado, nombre, 2 líneas problema→solución, chips, link a GitHub y, en ventas y cotizaciones, link a la app web en producción (https://ventas.appsherinox.com/ · https://cotizaciones.appsherinox.com/).
 
 1. **Quotation Management System** — Internal platform for 11 branches: quote requests, business-hours SLA tracking across time zones, and quoted vs. confirmed revenue by branch, buyer, rep and client. Alembic migrations, background scheduler, pytest against real PostgreSQL, gated CI/CD deploys.
    `FastAPI · PostgreSQL 17 · React 19 · Docker · GitHub Actions`

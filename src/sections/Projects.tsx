@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { SyntheticEvent } from 'react'
 import { Lightbox } from '../components/Lightbox'
 import type { LightboxItem } from '../components/Lightbox'
-import { GitHubIcon } from '../components/icons'
+import { ExternalLinkIcon, GitHubIcon } from '../components/icons'
 import { Section, revealStaggerClasses } from '../components/Section'
 import { TechIcon } from '../components/TechIcon'
 import { showsChipIcon } from '../lib/chipIcon'
@@ -307,7 +307,7 @@ export function Projects({ content }: ProjectsProps) {
                       <h3 className="font-display text-lg font-semibold">{texts.name}</h3>
                       {/* La etiqueta solo aparece cuando NO hay ningún enlace
                         que la sustituya. */}
-                      {project.internal && !project.repo && (
+                      {project.internal && !project.repo && !project.demo && (
                         <span className="rounded-full border border-border bg-background px-2.5 py-0.5 font-mono text-xs whitespace-nowrap text-muted">
                           {projects.internalTag}
                         </span>
@@ -332,18 +332,32 @@ export function Projects({ content }: ProjectsProps) {
                         </li>
                       ))}
                     </ul>
-                    {project.repo && (
-                      <div className="mt-5">
-                        <a
-                          href={project.repo}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`${projects.viewRepo}: ${texts.name}`}
-                          className={`inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-2.5 text-sm font-medium ${liftClasses}`}
-                        >
-                          <GitHubIcon className="h-5 w-5" />
-                          GitHub
-                        </a>
+                    {(project.repo || project.demo) && (
+                      <div className="mt-5 flex flex-wrap gap-3">
+                        {project.repo && (
+                          <a
+                            href={project.repo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${projects.viewRepo}: ${texts.name}`}
+                            className={`inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-2.5 text-sm font-medium ${liftClasses}`}
+                          >
+                            <GitHubIcon className="h-5 w-5" />
+                            GitHub
+                          </a>
+                        )}
+                        {project.demo && (
+                          <a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${projects.viewDemo}: ${texts.name}`}
+                            className={`inline-flex items-center gap-2 rounded-md border border-border bg-background px-5 py-2.5 text-sm font-medium ${liftClasses}`}
+                          >
+                            <ExternalLinkIcon className="h-5 w-5" />
+                            {projects.demoLabel}
+                          </a>
+                        )}
                       </div>
                     )}
                   </div>

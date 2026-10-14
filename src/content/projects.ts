@@ -9,9 +9,10 @@
  * `placeholder` (data URI de ~24 px para el blur-up de la miniatura) salen de
  * `python3 scripts/generate_thumb_placeholders.py`.
  *
- * Todos los proyectos son herramientas internas de Herinox (sin demo
- * pública), pero su código vive en repositorios públicos de GitHub (`repo`,
- * URLs verificadas con respuesta 200). La etiqueta "Proyecto interno" solo se
+ * Todos los proyectos son herramientas internas de Herinox, pero su código
+ * vive en repositorios de GitHub (`repo`) y los sistemas de ventas y
+ * cotizaciones exponen su app web en producción (`demo`, con login); URLs
+ * verificadas con respuesta 200. La etiqueta "Proyecto interno" solo se
  * muestra en tarjetas que no tengan ningún enlace.
  */
 export const PROJECT_IDS = [
@@ -44,7 +45,9 @@ export interface Project {
   screenshots: ProjectScreenshot[]
   /** Repositorio público en GitHub. */
   repo?: string
-  /** Herramienta interna: sin `repo` ni demo, la tarjeta muestra la etiqueta
+  /** App web en producción (pide login). */
+  demo?: string
+  /** Herramienta interna: sin `repo` ni `demo`, la tarjeta muestra la etiqueta
       de proyecto interno en lugar de enlaces. */
   internal: boolean
 }
@@ -119,6 +122,7 @@ export const PROJECTS: Project[] = [
       },
     ],
     repo: 'https://github.com/Edgar-Ontiveros/ventas-proyecto',
+    demo: 'https://ventas.appsherinox.com/',
     internal: true,
   },
   {
@@ -184,6 +188,7 @@ export const PROJECTS: Project[] = [
       },
     ],
     repo: 'https://github.com/Edgar-Ontiveros/proyecto-cotizaciones',
+    demo: 'https://cotizaciones.appsherinox.com/',
     internal: true,
   },
   {

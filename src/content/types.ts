@@ -90,6 +90,10 @@ export interface SiteContent {
         el nombre del proyecto: cuatro enlaces "GitHub" a secas serían
         idénticos para un lector de pantalla). */
     viewRepo: string
+    /** Texto visible del enlace a la app web en producción. */
+    demoLabel: string
+    /** Prefijo del nombre accesible de ese enlace (mismo patrón que viewRepo). */
+    viewDemo: string
     /** Textos por proyecto (los datos sin idioma viven en projects.ts). */
     items: Record<
       ProjectId,
