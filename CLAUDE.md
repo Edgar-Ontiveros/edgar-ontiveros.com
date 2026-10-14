@@ -11,7 +11,9 @@ sección.
 - Tailwind CSS v4 (plugin `@tailwindcss/vite`)
 - Fuentes self-hosted vía `@fontsource-variable`: Space Grotesk (display),
   Inter (cuerpo), JetBrains Mono (labels/código)
-- Deploy objetivo: Cloudflare Pages (aún no configurado)
+- Deploy: Cloudflare Pages, conectado al repo de GitHub; cada push a `main`
+  se publica automáticamente en https://edgar-ontiveros.com (hacer push =
+  publicar)
 
 ## Arquitectura
 
