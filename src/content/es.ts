@@ -56,8 +56,8 @@ export const es: SiteContent = {
       {
         id: 'herinox',
         company: 'Herinox',
-        role: 'Data Scientist / ML Engineer',
-        period: 'Abr 2026 – Actual',
+        role: 'Machine Learning Engineer & Developer',
+        period: 'Ago 2026 – Actual',
         location: 'México',
         intro:
           'Construyendo la plataforma interna de software que usan las 11 sucursales de la empresa.',
@@ -69,10 +69,22 @@ export const es: SiteContent = {
         technologies: ['FastAPI', 'PostgreSQL', 'React', 'AWS', 'Docker', 'scikit-learn'],
       },
       {
+        id: 'herinox-data-scientist',
+        company: 'Herinox',
+        role: 'Data Scientist',
+        period: 'Abr 2026 – Ago 2026',
+        location: 'México',
+        bullets: [
+          'Construí dashboards de rentabilidad y herramientas de análisis de margen para 11 sucursales, procesando más de 12,000 partidas de venta al mes.',
+          'Automaticé los flujos de precios y el procesamiento de documentos SAP con Python, FastAPI y React.',
+        ],
+        technologies: ['Python', 'FastAPI', 'React'],
+      },
+      {
         id: 'safran-manufacturing',
         company: 'Safran Aerosystems',
         role: 'Ingeniero de Manufactura 4.0',
-        period: 'Sep 2025 – Abr 2026',
+        period: 'Jul 2025 – Abr 2026',
         location: 'Chihuahua, MX',
         bullets: [
           'Construí monitoreo en Python para líneas de producción automatizadas, señalando anomalías en datos de máquina en vivo antes de que llegaran a scrap.',
@@ -89,7 +101,7 @@ export const es: SiteContent = {
         id: 'safran-intern',
         company: 'Safran Aerosystems',
         role: 'Practicante de Ingeniería de Proyectos',
-        period: 'Nov 2024 – Jul 2025',
+        period: 'Dic 2024 – Jun 2025',
         location: 'Chihuahua, MX',
         bullets: [
           'Apoyé la transferencia industrial de líneas de producción desde Niort, Francia — estandarizando procesos y automatización para la nueva planta.',

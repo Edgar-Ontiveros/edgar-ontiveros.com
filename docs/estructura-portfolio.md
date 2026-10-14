@@ -50,20 +50,25 @@ Copy del sitio en inglés (idioma default); la versión ES se genera como espejo
 
 Timeline vertical: línea con nodos cian, años grandes en mono, tags de stack por puesto.
 
-**Apr 2026 – Present · Data Scientist / ML Engineer · Herinox — Mexico**
+**Aug 2026 – Present · Machine Learning Engineer & Developer · Herinox — Mexico**
 *Building the internal software platform used across the company's 11 branches.*
 - Design and ship full-stack internal tools — FastAPI, PostgreSQL and React + TypeScript — replacing manual Excel workflows for the sales, purchasing and pricing teams.
 - Operate services on AWS EC2 with Docker, nginx and GitHub Actions; tests, linting and type checks gate every production release.
 - Apply ML to operations: auto-generating SAP article codes from free-text descriptions (scikit-learn + fuzzy matching) and forecasting sales, demand and inventory across all branches.
 `FastAPI · PostgreSQL · React · AWS · Docker · scikit-learn`
 
-**Sep 2025 – Apr 2026 · Manufacturing Engineer 4.0 · Safran Aerosystems — Chihuahua, MX**
+**Apr 2026 – Aug 2026 · Data Scientist · Herinox — Mexico**
+- Built profitability dashboards and margin-analysis tools for 11 branches, processing 12,000+ monthly sales line items.
+- Automated pricing workflows and SAP document processing with Python, FastAPI and React.
+`Python · FastAPI · React`
+
+**Jul 2025 – Apr 2026 · Manufacturing Engineer 4.0 · Safran Aerosystems — Chihuahua, MX**
 - Built Python monitoring for automated production lines, flagging anomalies in live machine data before they reached scrap.
 - Led an electric-torque automation project that replaced a manual tightening operation — digitized traceability and reduced torque-related defects.
 - **Foto de torque, discreta**: thumbnail (~180 px) dentro de la tarjeta; click abre lightbox con caption *"Electric-torque automation station — Safran Aerosystems"*. En el build se encuadra el crop para dejar fuera a la persona del fondo.
 `Python · Industrial automation · Data monitoring`
 
-**Nov 2024 – Jul 2025 · Project Engineer Intern · Safran Aerosystems — Chihuahua, MX**
+**Dec 2024 – Jun 2025 · Project Engineer Intern · Safran Aerosystems — Chihuahua, MX**
 - Supported the industrial transfer of production lines from Niort, France — standardizing processes and automation for the new site.
 
 ## 5 · Projects — `04 · Production systems`

@@ -15,6 +15,7 @@ export const site = {
   orgLogos: {
     uach: '/logos/uach-ingenieria.webp',
     herinox: '/logos/herinox.webp',
+    'herinox-data-scientist': '/logos/herinox.webp',
     'safran-manufacturing': '/logos/safran.webp',
     'safran-intern': '/logos/safran.webp',
   } as Record<string, string>,
